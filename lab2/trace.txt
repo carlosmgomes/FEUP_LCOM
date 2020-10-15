@@ -1,0 +1,36 @@
+@lcflib.a:2019, lcf_start
+  timer_test_time_base(timer, freq)
+> timer_test_time_base(2, 30)
+  @lab2.c:40, timer_test_time_base
+    timer_set_frequency(timer, freq)
+  > timer_set_frequency(2, 30)
+    @timer.c:12, timer_set_frequency
+      util_get_LSB(cicles, &lsb)
+    > util_get_LSB(0x9b5c, addr: 0xeffff65b)
+    < util_get_LSB(0x9b5c, addr: 0xeffff65b [0x5c]) -> (ret: 0)
+    @timer.c:13, timer_set_frequency
+      util_get_MSB(cicles, &msb)
+    > util_get_MSB(0x9b5c, addr: 0xeffff65a)
+    < util_get_MSB(0x9b5c, addr: 0xeffff65a [0x9b]) -> (ret: 0)
+    @timer.c:14, timer_set_frequency
+      timer_get_conf(timer, &status)
+    > timer_get_conf(2, addr: 0xeffff659)
+      @timer.c:71, timer_get_conf
+        sys_outb(TIMER_CTRL, rbcmd)
+      > sys_outb(0x43, 0xe8 = 0b11101000)
+      @timer.c:77, timer_get_conf
+        sys_inb(TIMER_0+timer, &temp)
+      > sys_inb(0x42, addr: 0xeffff56c)
+      < sys_inb(0x42, addr: 0xeffff56c [0xb6 = 0b10110110])
+    < timer_get_conf(2, addr: 0xeffff659 [0xb6 = 0b10110110]) -> (ret: 0)
+    @timer.c:37, timer_set_frequency
+      sys_outb(TIMER_CTRL, status)
+    > sys_outb(0x43, 0xb6 = 0b10110110)
+    @timer.c:40, timer_set_frequency
+      sys_outb(timer_addr, msb)
+    > sys_outb(0x42, 0x9b = 0b10011011)
+    @timer.c:43, timer_set_frequency
+      sys_outb(timer_addr, lsb)
+    > sys_outb(0x42, 0x5c = 0b01011100)
+  < timer_set_frequency(2, 30) -> (ret: 0)
+< timer_test_time_base(2, 30) -> (ret: 0)
