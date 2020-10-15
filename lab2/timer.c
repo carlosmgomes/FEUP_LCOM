@@ -7,7 +7,7 @@
 
 int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
 
-uint8_t lsb = 0, msb = 0, timer_addr=0,status;
+uint8_t lsb = 0, msb = 0, timer_addr=0, status;
 uint16_t cicles = TIMER_FREQ/freq;
 util_get_LSB(cicles,&lsb);
 util_get_MSB(cicles,&msb);
