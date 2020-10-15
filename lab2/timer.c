@@ -7,7 +7,7 @@
 
 int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
 
-uint8_t lsb = 0, msb = 0, status;
+uint8_t lsb = 0, msb = 0, timer_addr=0,status;
 uint16_t cicles = TIMER_FREQ/freq;
 util_get_LSB(cicles,&lsb);
 util_get_MSB(cicles,&msb);
@@ -15,7 +15,7 @@ if(timer_get_conf(timer,&status)!=0){
   printf("Timer_get_conf error");
   return 1;
 }
-uint8_t timer_addr=0;
+
 if(timer==0){
   status = ((status & 0x0f)|TIMER_SEL0|TIMER_LSB_MSB);
   timer_addr = TIMER_0;
