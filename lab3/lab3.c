@@ -39,7 +39,9 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 <<<<<<< HEAD
-extern uint32_t counter; // variable updated in utils.c
+extern uint32_t siCounter;
+extern bool done;
+extern bool make; 
 int(kbd_test_scan)() {
   /* To be completed by the students */
   printf("%s is not yet implemented!\n", __func__);
@@ -63,7 +65,7 @@ else{                                     // if scancode has 1byte
 
 }
 #define LAB3
-kbd_print_no_sysinb(counter);            // prints number of sys_inb calls
+kbd_print_no_sysinb(siCounter);            // prints number of sys_inb calls
 #ifdef LAB3
 #endif
 =======
@@ -89,6 +91,22 @@ int(kbd_test_scan)() {
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
+					kbc_ih();
+          if (done) {
+            kbd_print_scancode(make, size, scancode);
+				}
+				}
+			default:
+				break;
+			}
+		}
+	}
+                                                                                                    
+	if(kbc_unsubscribe_int()) return 1;
+
+	kbd_print_no_sysinb(siCounter);  
+	return 0;
+
 }
 
 int(kbd_test_poll)() {
