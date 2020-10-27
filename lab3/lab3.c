@@ -11,6 +11,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+extern uint32_t siCounter;
+extern bool done;
+extern bool make; 
+extern uint8_t size;
+extern uint8_t scancode[2];
+
 <<<<<<< HEAD
 
 =======
@@ -39,17 +45,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 <<<<<<< HEAD
-extern uint32_t siCounter;
-extern bool done;
-extern bool make; 
-extern uint8_t size;
 
-int(kbd_test_scan)() {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
-
-  return 1;
-}
 
 int(kbd_test_poll)() {
   uint8_t size, scancode_bytes [2];
@@ -109,14 +105,6 @@ int(kbd_test_scan)() {
 	kbd_print_no_sysinb(siCounter);  
 	return 0;
 
-}
-
-int(kbd_test_poll)() {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
-
-  return 1;
->>>>>>> 30c40705b060dd83a87220bf348c43b3e0ff2491
 }
 
 int(kbd_test_timed_scan)(uint8_t n) {
