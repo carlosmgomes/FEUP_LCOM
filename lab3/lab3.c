@@ -1,14 +1,20 @@
 #include <lcom/lcf.h>
 
 #include <lcom/lab3.h>
+<<<<<<< HEAD
 #include "i8042.h"
 #include "utils.h"
 #include <minix/sysutil.h>
+=======
+>>>>>>> 30c40705b060dd83a87220bf348c43b3e0ff2491
 
 #include <stdbool.h>
 #include <stdint.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 30c40705b060dd83a87220bf348c43b3e0ff2491
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
   lcf_set_language("EN-US");
@@ -32,6 +38,7 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+<<<<<<< HEAD
 extern uint32_t counter; // variable updated in utils.c
 int(kbd_test_scan)() {
   /* To be completed by the students */
@@ -59,6 +66,37 @@ else{                                     // if scancode has 1byte
 kbd_print_no_sysinb(counter);            // prints number of sys_inb calls
 #ifdef LAB3
 #endif
+=======
+
+int(kbd_test_scan)() {
+
+	uint8_t bit_num = 0;
+	int ipc_status;
+	message msg;
+	int r;
+	
+	if (kbc_subscribe_int(&bit_num)) return 1;
+	uint32_t irq_set = BIT(bit_num);
+	
+
+	while (bufferbyte[0] != 0x81)
+	{
+    if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+			printf("driver_receive failed with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) { /* received notification */
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE: /* hardware interrupt notification */
+				if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
+}
+
+int(kbd_test_poll)() {
+  /* To be completed by the students */
+  printf("%s is not yet implemented!\n", __func__);
+
+  return 1;
+>>>>>>> 30c40705b060dd83a87220bf348c43b3e0ff2491
 }
 
 int(kbd_test_timed_scan)(uint8_t n) {
