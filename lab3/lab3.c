@@ -4,21 +4,17 @@
 #include "i8042.h"
 #include "utils.h"
 #include <minix/sysutil.h>
-#include <keyboard.c>
+#include "keyboard.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 
-<<<<<<< HEAD
-=======
 extern uint32_t siCounter;
 extern bool done;
 extern bool make; 
 extern uint8_t size;
 extern uint8_t scancode[2];
 
-<<<<<<< HEAD
->>>>>>> 12519b63f89743712ac671fce56e49655d70dc1a
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -43,13 +39,7 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-<<<<<<< HEAD
-extern uint32_t counter; // variable updated in utils.c
 extern uint8_t scancode[2];
-=======
-<<<<<<< HEAD
-
->>>>>>> 12519b63f89743712ac671fce56e49655d70dc1a
 
 int(kbd_test_poll)() {
   uint8_t scancode_bytes [2];
@@ -66,10 +56,10 @@ else{                                     // if scancode has 1byte
   }
 
 }
-#define LAB3
+//#define LAB3
 kbd_print_no_sysinb(siCounter);            // prints number of sys_inb calls
-#ifdef LAB3
-#endif
+//#ifdef LAB3
+//#endif
 return 0;
 }
 
