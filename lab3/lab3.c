@@ -42,6 +42,8 @@ int main(int argc, char *argv[]) {
 extern uint32_t siCounter;
 extern bool done;
 extern bool make; 
+extern uint8_t size;
+
 int(kbd_test_scan)() {
   /* To be completed by the students */
   printf("%s is not yet implemented!\n", __func__);
