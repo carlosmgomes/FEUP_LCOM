@@ -56,7 +56,7 @@ void (kbc_ih)() {
 
   if (done)
     size = 0;
-  get_kdb_data(&data);
+  get_kdb_scancode(&data);
   if (data & KBC_PARITY)
     make = false;
   else
