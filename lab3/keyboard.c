@@ -1,6 +1,7 @@
 #include <lcom/lcf.h>
 #include <i8042.c>
 
+
 int kbd_hid = 1;
 int siCounter = 0;
 uint8_t scancode[2];
@@ -29,7 +30,7 @@ int (get_kdb_scancode)(uint8_t *scancode) {
   uint8_t stat, data;
   int attemptcount = 0;
   while (attemptcount < 3) {
-    attemptcount++
+    attemptcount++;
     util_sys_inb(KBC_SR, &stat);  
     siCounter++;
     if (stat & KBC_OBF) {  	// Check if output buffer is full
@@ -56,7 +57,7 @@ void (kbc_ih)() {
 
   if (done)
     size = 0;
-  get_kdb_data(&data);
+  get_kdb_scancode(&data);
   if (data & KBC_PARITY)
     make = false;
   else

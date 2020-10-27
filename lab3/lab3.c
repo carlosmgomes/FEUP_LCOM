@@ -1,20 +1,15 @@
 #include <lcom/lcf.h>
 
 #include <lcom/lab3.h>
-<<<<<<< HEAD
 #include "i8042.h"
 #include "utils.h"
 #include <minix/sysutil.h>
-=======
->>>>>>> 30c40705b060dd83a87220bf348c43b3e0ff2491
+#include <keyboard.c>
 
 #include <stdbool.h>
 #include <stdint.h>
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 30c40705b060dd83a87220bf348c43b3e0ff2491
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
   lcf_set_language("EN-US");
@@ -38,27 +33,21 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-<<<<<<< HEAD
 extern uint32_t counter; // variable updated in utils.c
-int(kbd_test_scan)() {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
-
-  return 1;
-}
+extern uint8_t scancode[2];
 
 int(kbd_test_poll)() {
-  uint8_t size, scancode_bytes [2];
+  uint8_t scancode_bytes [2];
 
-while(scancode!=KBD_ESC_BREAKCODE){      //ends when it reads the breakcode (ESC key = 0x81)
+while(scancode[0]!=KBD_ESC_BREAKCODE){      //ends when it reads the breakcode (ESC key = 0x81)
 kbc_ih();
-if(scancode==KBD_TWOBYTES_SCANCODE){   // if scancode has 2bytes
-  scancode_bytes[1] = scancode>>4;
-  kbd_print_scancode(1,2,scancode_bytes);
+if(scancode[0]==KBD_TWOBYTES_SCANCODE){   // if scancode has 2bytes
+  scancode_bytes[1] = scancode[1];
+  kbd_print_scancode(1,2,scancode_bytes); // 1(true),2(size)
   }
 else{                                     // if scancode has 1byte
-  scancode_bytes [0] = scancode;
-  kbd_print_scancode(1,1,scancode_bytes);
+  scancode_bytes [0] = scancode[0];
+  kbd_print_scancode(1,1,scancode_bytes);  //1(true),1(size)
   }
 
 }
@@ -66,7 +55,8 @@ else{                                     // if scancode has 1byte
 kbd_print_no_sysinb(counter);            // prints number of sys_inb calls
 #ifdef LAB3
 #endif
-=======
+return 0;
+}
 
 int(kbd_test_scan)() {
 
@@ -79,7 +69,7 @@ int(kbd_test_scan)() {
 	uint32_t irq_set = BIT(bit_num);
 	
 
-	while (bufferbyte[0] != 0x81)
+	while (scancode[0] != 0x81)
 	{
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
 			printf("driver_receive failed with: %d", r);
@@ -89,14 +79,22 @@ int(kbd_test_scan)() {
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
-}
+					kbc_ih();
+          if (done) {
+            kbd_print_scancode(make, size, scancode);
+				}
+				}
+			default:
+				break;
+			}
+		}
+	}
+                                                                                                    
+	if(kbc_unsubscribe_int()) return 1;
 
-int(kbd_test_poll)() {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+	kbd_print_no_sysinb(siCounter);  
+	return 0;
 
-  return 1;
->>>>>>> 30c40705b060dd83a87220bf348c43b3e0ff2491
 }
 
 int(kbd_test_timed_scan)(uint8_t n) {
