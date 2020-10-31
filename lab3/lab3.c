@@ -44,11 +44,11 @@ while(scancode[0]!=KBD_ESC_BREAKCODE){      //ends when it reads the breakcode (
 kbc_ih();
 if(scancode[0]==KBD_TWOBYTES_SCANCODE){   // if scancode has 2bytes
   scancode_bytes[1] = scancode[1];
-  kbd_print_scancode(make,size,scancode_bytes); // 1(true),2(size)
+  kbd_print_scancode(make,size,scancode_bytes);
   }
 else{                                     // if scancode has 1byte
   scancode_bytes [0] = scancode[0];
-  kbd_print_scancode(make,size,scancode_bytes);  //1(true),1(size)
+  kbd_print_scancode(make,size,scancode_bytes);
   }
 
 }
