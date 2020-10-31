@@ -4,7 +4,6 @@
 
 
 
-
 int (kbc_subscribe_int) (uint8_t *bit_no) {
   *bit_no = (uint8_t) kbd_hid;
 
@@ -40,7 +39,7 @@ int (get_kdb_scancode)(uint8_t *scancode) {
 		}
       break;
     }
-    tickdelay(micros_to_ticks(KBD_DELAY));
+    //tickdelay(micros_to_ticks(KBD_DELAY));
   }
   return -1;
 }

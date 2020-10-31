@@ -9,11 +9,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-extern uint32_t siCounter;
-extern bool done;
-extern bool make; 
-extern uint8_t size;
-extern uint8_t scancode[2];
+
 
 
 int main(int argc, char *argv[]) {
@@ -48,18 +44,15 @@ while(scancode[0]!=KBD_ESC_BREAKCODE){      //ends when it reads the breakcode (
 kbc_ih();
 if(scancode[0]==KBD_TWOBYTES_SCANCODE){   // if scancode has 2bytes
   scancode_bytes[1] = scancode[1];
-  kbd_print_scancode(1,2,scancode_bytes); // 1(true),2(size)
+  kbd_print_scancode(make,size,scancode_bytes); // 1(true),2(size)
   }
 else{                                     // if scancode has 1byte
   scancode_bytes [0] = scancode[0];
-  kbd_print_scancode(1,1,scancode_bytes);  //1(true),1(size)
+  kbd_print_scancode(make,size,scancode_bytes);  //1(true),1(size)
   }
 
 }
-//#define LAB3
 kbd_print_no_sysinb(siCounter);            // prints number of sys_inb calls
-//#ifdef LAB3
-//#endif
 return 0;
 }
 

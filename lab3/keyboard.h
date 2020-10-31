@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 
-int kbd_hid = 1;
-uint32_t siCounter = 0;
+int kbd_hid;
+uint32_t siCounter;
 uint8_t scancode[2];
 
 
@@ -16,7 +16,7 @@ int (kbc_unsubscribe_int)();
 
 int (get_kdb_scancode)(uint8_t *scancode);
 
-uint8_t size = 0;
+uint8_t size;
 bool done;
 bool make;
 
