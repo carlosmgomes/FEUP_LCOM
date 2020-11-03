@@ -5,6 +5,7 @@
 #include "utils.h"
 #include <minix/sysutil.h>
 #include "keyboard.h"
+#include "timer.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -56,6 +57,7 @@ kbd_print_no_sysinb(siCounter);            // prints number of sys_inb calls
 return 0;
 }
 
+
 int(kbd_test_scan)() {
 
 	uint8_t bit_num = 0;
@@ -95,9 +97,53 @@ int(kbd_test_scan)() {
 
 }
 
-int(kbd_test_timed_scan)(uint8_t n) {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+extern unsigned int counter
 
-  return 1;
+
+int(kbd_test_timed_scan)(uint8_t n) {
+	uint8_t bitn;
+  uint8_t bit_num;
+  uint8_t timePassed = 0;
+
+	if (kbc_subscribe_int(&bit_num)) return 1;
+  uint32_t irq_set = BIT(bit_num);
+
+  if (timer_subscribe_int(&bitn)) return 1;
+  uint32_t timer_irq_set = (uint32_t)(BIT(bitn));
+
+	message msg;
+  int r, ipc_status;
+
+ while ((scancode[0] != 0x81) && timePassed < n) {
+    if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+      printf("driver_receive failed with: %d", r);
+      continue;
+    }
+    if (is_ipc_notify(ipc_status)) { /* received notification */
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE: /* hardware interrupt notification */
+			if (msg.m_notify.interrupts & timer_irq_set) { /* subscribed interrupt */
+				timer_int_handler();
+				if ((counter % 60) == 0) {
+					timePassed++; //increases variable representing numbers of seconds passed
+        }																
+			}
+			if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
+				kbc_ih();	
+				counter = 0;		
+				timePassed = 0;
+				if(done) kbd_print_scancode(make, size, scancode);
+			}
+			break;
+		default:
+			break; /* no other notifications expected: do nothing */
+		}
+	}
+	}
+
+
+	timer_unsubscribe_int();
+    kbc_unsubscribe_int();
+
+	return 0;
 }
