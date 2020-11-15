@@ -49,4 +49,27 @@
 #define KBD_ESC_BREAKCODE 0x81 // breakcode of the ESC key
 #define KBD_TWOBYTES_SCANCODE 0xE0 // first byte of two byte scancode
 
+
+//MOUSE
+
+#define MOUSE_IRQ 12
+
+#define LB BIT(0)
+#define RB BIT(1)
+#define MB BIT(2)
+#define MSB_X_DELTA BIT(4)
+#define MSB_Y_DELTA BIT(5)
+#define X_OVFL BIT(6)
+#define Y_OVFL BIT(7)
+
+#define DIS_MOUSE 0xA7 // disable mouse
+#define ENABLE_MOUSE 0xA8 // enable mouse
+#define CHECK_MOUSE 0xA9 // check mouse interface
+#define WRT_BYTE_MOUSE 0xD4 // write byte to mouse
+#define ACK 0xFA   //if everything OK
+#define NACK 0xFE  //if invalid byte
+#define ERROR 0xFC //second consecutive invalid byte
+
+
+
 #endif /* _LCOM_I8042_H_ */
