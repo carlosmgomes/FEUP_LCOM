@@ -97,7 +97,7 @@ int(kbd_test_scan)() {
 
 }
 
-extern unsigned int counter
+extern unsigned int counter;
 
 
 int(kbd_test_timed_scan)(uint8_t n) {

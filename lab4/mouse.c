@@ -3,6 +3,7 @@
 #include "mouse.h"
 
 
+int mouse_hid=2;
 
 int (mouse_subscribe_int) (uint8_t *bit_no) {
   *bit_no = (uint8_t) mouse_hid;
@@ -77,14 +78,14 @@ else{
 }
 
 void (mouse_ih)(){
-  uint8_t data,status;
+  uint8_t data,stat;
   unsigned int attempts=0;
   while(attempts<3){
     attempts++;
-    if(util_sys_inb(KBC_SR,&status)!=0){printf("sys_inb error in mouse_ih()");}
-    if(status&KBC_AUX){
-      if (status & KBC_OBF) {   // checks if there are any errors in status register
-        if ((status & (KBC_PARITY | KBC_TIMEOUT))== 0) {
+    if(util_sys_inb(KBC_SR,&stat)!=0){printf("sys_inb error in mouse_ih()");}
+    if(stat&KBC_AUX){ // checks if data comes from mouse
+      if (stat & KBC_OBF) {   // checks if there are any errors in status register
+        if ((stat & (KBC_PARITY | KBC_TIMEOUT))== 0) {
         if(util_sys_inb(KBC_OB,&data)!=0){printf("sys_inb error in mouse_ih()");}
         packet_byte = data;     // saves data in variable packet_byte
         break;
@@ -93,4 +94,31 @@ void (mouse_ih)(){
     }
     tickdelay(micros_to_ticks(KBD_DELAY));
   }
+}
+
+int mouse_disable_data_reporting(){
+  uint8_t stat,data;
+  unsigned int attempts=0;
+  
+  if(sys_outb(KBC_CR,WRT_BYTE_MOUSE)){return 1;} // 
+
+  while(attempts<3){
+    attempts++;
+    
+    if(util_sys_inb(KBC_CR,&stat)){return 1;} // checks if input buffer is full
+    if((stat&KBC_IB)==0){
+    if(sys_outb(KBC_IB,DISABLE)){return 1;}   
+    }
+    
+    if(util_sys_inb(KBC_OB,&data)){return 1;} // reads the acknowledgment byte
+
+    if(data == ERROR){ // Error detected
+      printf("ERROR in mouse_disable_data_reporting");
+      return 1;}
+    else if(data == ACK){ // if ACK everything's OK
+      return 0;
+
+    }
+  }
+  return 1;
 }

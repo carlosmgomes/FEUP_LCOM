@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 // Any header files included below this line should have been created by you
+#include "i8042.h"
 #include "mouse.h"
 #include "timer.h"
 #include "utils.h"
@@ -43,11 +44,14 @@ int (mouse_test_packet)(uint32_t cnt) {
   struct packet pp;
   uint8_t pack[3];
 
+  mouse_enable_data_reporting(); // criar esta função
+
   if(mouse_subscribe_int(&bit_num)!=0){return 1;}
   uint32_t irq_set=BIT(bit_num);
 
 	while (cnt>packet_counter)
 	{
+    if(cnt == packet_counter){break;}
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
 			printf("driver_receive failed with: %d", r);
 			continue;
@@ -69,16 +73,19 @@ int (mouse_test_packet)(uint32_t cnt) {
           pack[2]=packet_byte;
           byte_counter=0;
           packet_counter++;
+          get_mouse_packet(&pp,pack);
+          mouse_print_packet(&pp);
         }
       }
+      break;
 			default:
 				break;
 			}
 		}
-    get_mouse_packet(&pp,pack);
-    mouse_print_packet(&pp);
+
 	}
   mouse_unsubscribe_int();
+  mouse_disable_data_reporting();
   return 0;
 }
 

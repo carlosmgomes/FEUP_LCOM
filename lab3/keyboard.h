@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 
-int kbd_hid;
 uint32_t siCounter;
 uint8_t scancode[2];
 

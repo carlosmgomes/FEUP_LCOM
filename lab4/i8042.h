@@ -66,9 +66,15 @@
 #define ENABLE_MOUSE 0xA8 // enable mouse
 #define CHECK_MOUSE 0xA9 // check mouse interface
 #define WRT_BYTE_MOUSE 0xD4 // write byte to mouse
-#define ACK 0xFA   //if everything OK
-#define NACK 0xFE  //if invalid byte
-#define ERROR 0xFC //second consecutive invalid byte
+#define ACK 0xFA   // if everything OK
+#define NACK 0xFE  // if invalid byte
+#define ERROR 0xFC // second consecutive invalid byte
+#define ENABLE 0xF4 // Enable (Data Reporting) In stream mode only
+#define DISABLE 0xF5 // Disable (Data Reporting) In stream mode, should be sentbefore any other command
+#define READ_DATA 0xEB // Send data packet request
+#define SET_STREAM_MODE 0xEA // set Stream ModeSend data on events
+
+
 
 
 

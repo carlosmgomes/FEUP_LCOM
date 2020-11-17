@@ -3,6 +3,7 @@
 #include <keyboard.h>
 
 
+int kbd_hid=1;
 
 int (kbc_subscribe_int) (uint8_t *bit_no) {
   *bit_no = (uint8_t) kbd_hid;
