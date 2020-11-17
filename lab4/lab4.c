@@ -89,10 +89,58 @@ int (mouse_test_packet)(uint32_t cnt) {
   return 0;
 }
 
+extern unsigned int counter;
+
 int (mouse_test_async)(uint8_t idle_time) {
-    /* To be completed */
-    printf("%s(%u): under construction\n", __func__, idle_time);
-    return 1;
+  int ipc_status, r;
+	message msg;
+	uint8_t bit_no = 12;
+	uint8_t bit_no2 = 0;
+	uint32_t mirq_set, tirq_set;
+	uint8_t elapsedTime = 0, byteNumber = 0, bytes[3];
+	struct packet pp;
+
+	mouse_enable_data_reporting();
+	mouse_subscribe_int(&bit_no);
+	mirq_set = (uint32_t)(BIT(bit_no));
+	timer_subscribe_int(&bit_no2);
+	tirq_set = (uint32_t)(BIT(bit_no2));
+
+	while (elapsedTime < idle_time) {
+		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+			printf("driver_receive failes with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) {
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE:
+				if (msg.m_notify.interrupts & mirq_set) {
+					mouse_ih();
+					bytes[byteNumber] = packet_byte;
+					byteNumber++;
+					counter = 0;
+					if (byteNumber == 3) {
+            get_mouse_packet(bytes, &pp);
+						mouse_print_packet(&pp);
+						byteNumber = 0;
+					}
+				}
+				if (msg.m_notify.interrupts & tirq_set) {
+					timer_int_handler();
+					if (counter % sys_hz() == 0)
+						elapsedTime++;
+				}
+			default:
+				break;
+			}
+		}
+	}
+
+	mouse_unsubscribe_int();
+	timer_unsubscribe_int();
+	mouse_disable_data_reporting()
+	
+	return 0;
 }
 /*
 int (mouse_test_gesture)() {
