@@ -54,6 +54,8 @@
 
 #define MOUSE_IRQ 12
 
+//  STATUS
+
 #define LB BIT(0)
 #define RB BIT(1)
 #define MB BIT(2)
@@ -61,6 +63,8 @@
 #define MSB_Y_DELTA BIT(5)
 #define X_OVFL BIT(6)
 #define Y_OVFL BIT(7)
+
+// MOUSE COMMANDS
 
 #define DIS_MOUSE 0xA7 // disable mouse
 #define ENABLE_MOUSE 0xA8 // enable mouse
@@ -72,7 +76,8 @@
 #define ENABLE 0xF4 // Enable (Data Reporting) In stream mode only
 #define DISABLE 0xF5 // Disable (Data Reporting) In stream mode, should be sentbefore any other command
 #define READ_DATA 0xEB // Send data packet request
-#define SET_STREAM_MODE 0xEA // set Stream ModeSend data on events
+#define SET_STREAM_MODE 0xEA // set Stream Mode Send data on events
+#define SET_REMOTE_MODE 0xF0 //Set Remote mode Send data on request only
 
 
 

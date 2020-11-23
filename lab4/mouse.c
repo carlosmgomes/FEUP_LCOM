@@ -96,6 +96,32 @@ void (mouse_ih)(){
   }
 }
 
+int mouse_enable_data(){
+  uint8_t stat,data;
+  unsigned int attempts=0;
+  
+  if(sys_outb(KBC_CR,WRT_BYTE_MOUSE)){return 1;} // 
+
+  while(attempts<3){
+    attempts++;
+    
+    if(util_sys_inb(KBC_CR,&stat)){return 1;} // checks if input buffer is full
+    if((stat&KBC_IB)==0){
+    if(sys_outb(KBC_IB,ENABLE)){return 1;}   // writes command ENABLE to the input buffer
+    }
+    if(util_sys_inb(KBC_OB,&data)){return 1;} // reads the acknowledgment byte
+
+    if(data == ERROR){ // Error detected
+      printf("ERROR in mouse_enable_data");
+      return 1;}
+    else if(data == ACK){ // if ACK everything's OK
+      return 0;
+
+    }
+  }
+  return 1;
+}
+
 int mouse_disable_data_reporting(){
   uint8_t stat,data;
   unsigned int attempts=0;
@@ -107,9 +133,9 @@ int mouse_disable_data_reporting(){
     
     if(util_sys_inb(KBC_CR,&stat)){return 1;} // checks if input buffer is full
     if((stat&KBC_IB)==0){
-    if(sys_outb(KBC_IB,DISABLE)){return 1;}   
+    if(sys_outb(KBC_IB,DISABLE)){return 1;}   // writes command DISABLE to the input buffer
     }
-    
+
     if(util_sys_inb(KBC_OB,&data)){return 1;} // reads the acknowledgment byte
 
     if(data == ERROR){ // Error detected
@@ -118,6 +144,33 @@ int mouse_disable_data_reporting(){
     else if(data == ACK){ // if ACK everything's OK
       return 0;
 
+    }
+  }
+  return 1;
+}
+
+int (minix_default_cmd_byte)(){
+  uint8_t stat,data;
+  unsigned int attempts=0;
+  int default_cmd = minix_get_dflt_kbc_cmd_byte();
+  if(sys_outb(KBC_CR,WRT_BYTE_MOUSE)){return 1;} // 
+
+  while(attempts<3){
+    attempts++;
+    
+    if(util_sys_inb(KBC_CR,&stat)){return 1;} // checks if input buffer is full
+    if((stat&KBC_IB)==0){
+    if(sys_outb(KBC_CR,default_cmd)){return 1;}   // writes command DISABLE to the input buffer
+    }
+    tickdelay(micros_to_ticks(KBD_DELAY));
+    if(util_sys_inb(KBC_OB,&data)){return 1;} // reads the acknowledgment byte
+
+    if(data == ERROR){ // Error detected
+      printf("ERROR in minix_default_cmd_byte");
+      return 1;}
+    else if(data == ACK){ // if ACK everything's OK
+      return 0;
+    tickdelay(micros_to_ticks(KBD_DELAY));
     }
   }
   return 1;

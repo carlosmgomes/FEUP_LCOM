@@ -44,7 +44,7 @@ int (mouse_test_packet)(uint32_t cnt) {
   struct packet pp;
   uint8_t pack[3];
 
-  mouse_enable_data_reporting(); // criar esta função
+  mouse_enable_data(); // criar esta função
 
   if(mouse_subscribe_int(&bit_num)!=0){return 1;}
   uint32_t irq_set=BIT(bit_num);
@@ -62,18 +62,18 @@ int (mouse_test_packet)(uint32_t cnt) {
 				if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
         mouse_ih();                       // calls mouse interrupt handler
         if(byte_counter==0){               
-          pack[0]=packet_byte;             
-          byte_counter++;
+          pack[0]=packet_byte;           // first byte goes to packet[0]
+          byte_counter++;                // increase byte_counter
         }
         else if(byte_counter==1){
-          pack[1]=packet_byte;
-          byte_counter++;
-        }
-        else if(byte_counter==2){
-          pack[2]=packet_byte;
-          byte_counter=0;
-          packet_counter++;
-          get_mouse_packet(&pp,pack);
+          pack[1]=packet_byte;           // second byte goes to packet[1]
+          byte_counter++;                // increase byte_counter
+        } 
+        else if(byte_counter==2){        
+          pack[2]=packet_byte;           // third byte goes to packet[2] 
+          byte_counter=0;                // restarts byte_counter
+          packet_counter++;              // increase packet_counter to compare with cnt
+          get_mouse_packet(&pp,pack);    // after reading 3 bytes
           mouse_print_packet(&pp);
         }
       }
@@ -90,10 +90,57 @@ int (mouse_test_packet)(uint32_t cnt) {
 }
 
 int (mouse_test_async)(uint8_t idle_time) {
-    /* To be completed */
-    printf("%s(%u): under construction\n", __func__, idle_time);
-    return 1;
+  int ipc_status, r;
+	message msg;
+	uint8_t bit_no = 12;
+	uint8_t bit_no2 = 0;
+	uint32_t mirq_set, tirq_set;
+	uint8_t elapsedTime = 0, byteNumber = 0, bytes[3];
+	struct packet pp;
+
+	mouse_enable_data_reporting();
+	mouse_subscribe_int(&bit_no);
+	mirq_set = (uint32_t)(BIT(bit_no));
+	timer_subscribe_int(&bit_no2);
+	tirq_set = (uint32_t)(BIT(bit_no2));
+
+	while (elapsedTime < idle_time) {
+		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+			printf("driver_receive failes with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) {
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE:
+				if (msg.m_notify.interrupts & mirq_set) {
+					mouse_ih();
+					bytes[byteNumber] = packet_byte;
+					byteNumber++;
+					counter = 0;
+					if (byteNumber == 3) {
+            get_mouse_packet(&pp,bytes);
+						mouse_print_packet(&pp);
+						byteNumber = 0;
+					}
+				}
+				if (msg.m_notify.interrupts & tirq_set) {
+					timer_int_handler();
+					if (counter % sys_hz() == 0)
+						elapsedTime++;
+				}
+			default:
+				break;
+			}
+		}
+	}
+
+	mouse_unsubscribe_int();
+	timer_unsubscribe_int();
+	mouse_disable_data_reporting();
+	
+	return 0;
 }
+
 /*
 int (mouse_test_gesture)() {
     printf("%s: under construction\n", __func__);
@@ -101,7 +148,30 @@ int (mouse_test_gesture)() {
 }*/
 
 int (mouse_test_remote)(uint16_t period, uint8_t cnt) {
-    /* To be completed */
-    printf("%s(%u, %u): under construction\n", __func__, period, cnt);
-    return 1;
+  unsigned int packet_counter=0,byte_counter=0; 
+  struct packet pp;
+  uint8_t pack[3];
+
+while (cnt>packet_counter){
+mouse_ih();                       // calls mouse interrupt handler
+        if(byte_counter==0){               
+          pack[0]=packet_byte;           // first byte goes to packet[0]
+          byte_counter++;                // increase byte_counter
+        }
+        else if(byte_counter==1){
+          pack[1]=packet_byte;           // second byte goes to packet[1]
+          byte_counter++;                // increase byte_counter
+        } 
+        else if(byte_counter==2){        
+          pack[2]=packet_byte;           // third byte goes to packet[2] 
+          byte_counter=0;                // restarts byte_counter
+          packet_counter++;              // increase packet_counter to compare with cnt
+          get_mouse_packet(&pp,pack);    // after reading 3 bytes
+          mouse_print_packet(&pp);
+        }
+}
+  mouse_enable_data();
+  mouse_disable_data_reporting();
+  minix_default_cmd_byte();
+  return 0;
 }
