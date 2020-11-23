@@ -89,6 +89,8 @@ int (mouse_test_packet)(uint32_t cnt) {
   return 0;
 }
 
+extern unsigned int counter;
+
 int (mouse_test_async)(uint8_t idle_time) {
   int ipc_status, r;
 	message msg;
@@ -136,8 +138,7 @@ int (mouse_test_async)(uint8_t idle_time) {
 
 	mouse_unsubscribe_int();
 	timer_unsubscribe_int();
-	mouse_disable_data_reporting();
-	
+  	mouse_disable_data_reporting();
 	return 0;
 }
 
