@@ -183,6 +183,7 @@ int (mouse_test_gesture)(uint8_t xlen, uint8_t tolerance) {
   mirq_set = (uint32_t)(BIT(bit_no));
   bool ReadSecond = false, ReadThird = false;
   uint8_t pack[3];
+  struct packet pp;
 
   mouse_enable_data();
   if (mouse_subscribe_int(&bit_no)!=0) return 1;
