@@ -142,11 +142,6 @@ int (mouse_test_async)(uint8_t idle_time) {
 	return 0;
 }
 
-/*
-int (mouse_test_gesture)() {
-    printf("%s: under construction\n", __func__);
-    return 1;
-}*/
 
 int (mouse_test_remote)(uint16_t period, uint8_t cnt) {
   unsigned int packet_counter=0,byte_counter=0; 
@@ -174,5 +169,64 @@ mouse_ih();                       // calls mouse interrupt handler
   mouse_enable_data();
   mouse_disable_data_reporting();
   minix_default_cmd_byte();
+  return 0;
+}
+
+uint8_t bytes[3];
+
+
+int (mouse_test_gesture)(uint8_t xlen, uint8_t tolerance) {
+  bool done = false;
+  uint8_t bit_no = 0;
+  int ipc_status,r;
+  message msg;
+  mirq_set = (uint32_t)(BIT(bit_no));
+  bool ReadSecond = false, ReadThird = false;
+  uint8_t pack[3];
+
+  mouse_enable_data();
+  if (mouse_subscribe_int(&bit_no)!=0) return 1;
+
+  while(!done){
+      if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) { 
+        printf("driver_receive failed with: %d", r);
+        continue;
+      }
+      if (is_ipc_notify(ipc_status)) {
+        switch (_ENDPOINT_P(msg.m_source)) {
+          case HARDWARE: 
+            if (msg.m_notify.interrupts & irq_set) {
+              mouse_ih();
+              if (!ReadSecond && !ReadThird && (packet_byte & BIT(3))){
+                bytes[0] = packet_byte;
+                ReadSecond = true;
+              }
+              else if (ReadSecond) {
+                bytes[1] = packet_byte;
+                ReadThird = true;
+                ReadSecond = false;
+              }
+              else if (ReadThird) {
+                bytes[2] = packet_byte;
+                ReadThird = false;
+                for(unsigned int i = 0; i < 3; i++)
+                  pack[i] = bytes[i];
+                get_mouse_packet(&pp,pack);
+                mouse_print_packet(&pp);
+                done = draw_handler(xlen, tolerance, &pp);
+              }
+              else
+                continue;
+            }
+            break;
+          default:
+            break; 
+        }
+      }
+  }
+
+  if (mouse_unsubscribe_int()!=0) return 1;
+  if (mouse_disable_data_report() != 0) return 1;
+  
   return 0;
 }
