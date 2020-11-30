@@ -218,7 +218,7 @@ struct mouse_ev * mouse_events(struct packet * pack) {
 }
 
 
-bool (draw_handler)(uint8_t xlen, uint8_t tolerance, struct packet * pack) {
+bool draw_handler (uint8_t xlen, uint8_t tolerance, struct packet * pack) {
   
   struct mouse_ev * mouse_event = mouse_events(pack);
 

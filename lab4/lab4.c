@@ -1,4 +1,3 @@
-// IMPORTANT: you must include the following line in all your C files
 #include <lcom/lcf.h>
 
 #include <stdint.h>
@@ -44,7 +43,7 @@ int (mouse_test_packet)(uint32_t cnt) {
   struct packet pp;
   uint8_t pack[3];
 
-  mouse_enable_data(); // criar esta função
+  mouse_enable_data();
 
   if(mouse_subscribe_int(&bit_num)!=0){return 1;}
   uint32_t irq_set=BIT(bit_num);
@@ -100,7 +99,7 @@ int (mouse_test_async)(uint8_t idle_time) {
 	uint8_t elapsedTime = 0, byteNumber = 0, bytes[3];
 	struct packet pp;
 
-	mouse_enable_data_reporting();
+	mouse_enable_data();
 	mouse_subscribe_int(&bit_no);
 	mirq_set = (uint32_t)(BIT(bit_no));
 	timer_subscribe_int(&bit_no2);
@@ -179,6 +178,7 @@ int (mouse_test_gesture)(uint8_t xlen, uint8_t tolerance) {
   bool done = false;
   uint8_t bit_no = 0;
   int ipc_status,r;
+  uint32_t mirq_set;
   message msg;
   mirq_set = (uint32_t)(BIT(bit_no));
   bool ReadSecond = false, ReadThird = false;
@@ -187,6 +187,7 @@ int (mouse_test_gesture)(uint8_t xlen, uint8_t tolerance) {
 
   mouse_enable_data();
   if (mouse_subscribe_int(&bit_no)!=0) return 1;
+  uint32_t irq_set=BIT(bit_no);
 
   while(!done){
       if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) { 
@@ -227,7 +228,7 @@ int (mouse_test_gesture)(uint8_t xlen, uint8_t tolerance) {
   }
 
   if (mouse_unsubscribe_int()!=0) return 1;
-  if (mouse_disable_data_report() != 0) return 1;
+  if (mouse_disable_data_reporting() != 0) return 1;
   
   return 0;
 }
