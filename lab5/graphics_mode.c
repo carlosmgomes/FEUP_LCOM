@@ -56,9 +56,9 @@ int vbe_int_10(uint16_t mode){
 }
 
 int draw_pixel(uint16_t x, uint16_t y, uint32_t color) {
-  if (x >= data.XResolution)
+  if (x >= vmi_p.XResolution)
     return 0;
-  memcpy(video_mem + (x + data.XResolution * y) * ((data.BitsPerPixel + 7) / 8), &color, ((data.BitsPerPixel + 7) / 8));
+  memcpy(video_mem + (x + vmi_p.XResolution * y) * ((vmi_p.BitsPerPixel + 7) / 8), &color, ((vmi_p.BitsPerPixel + 7) / 8));
   return 0;
 }
 
