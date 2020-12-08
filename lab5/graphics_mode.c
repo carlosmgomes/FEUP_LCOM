@@ -2,13 +2,29 @@
 
 
 
+int(vbe_mode_info)(uint16_t mode, vbe_mode_info_t *vmi_p) {
+  mmap_t mm;
+  lm_alloc(sizeof(vbe_mode_info_t), &mm);
+  phys_bytes buf = mm.phys;
+  reg86_t r;
+  memset(&r, 0, sizeof(r));
+  r.ax = 0x4F01; /* VBE get mode info */
+  /* translate the buffer linear address to a far pointer */
+  r.es = PB2BASE(buf); /* set a segment base */
+  r.di = PB2OFF(buf);  /* set the offset accordingly */
+  r.cx = mode;
+  r.intno = 0x10;
+  if (sys_int86(&r) != OK) { /* call BIOS */
+    lm_free(&mm);
+    return 1;
+  }
+*vmi_p=*(vbe_mode_info_t*)mm.virt;
+lm_free(&mm);
+return 0;
+}
 
 void*(vg_init)(uint16_t	mode){ 
-    if(vbe_int_10(mode)){        
-        printf("vbe_int_10 ERROR");
-        }
-    
-    if(vbe_get_mode_info(mode, &vmi_p)!=0){
+    if(vbe_mode_info(mode, &vmi_p)!=0){
         printf("vbe_get_mode_info ERROR");
     }
 
@@ -96,9 +112,37 @@ int draw_pixmap(uint8_t *map, xpm_image_t img, uint16_t x, uint16_t y)
       if ((y+i) >= YRes) break;
       for(size_t j=0; j < img.width; j++)
       {
-          if ((x+j) >= Xres) break; 
+          if ((x+j) >= XRes) break; 
           draw_pixel((x+j), (y+i), *(map + j + i*img.width));
       }
+  }
+  return 0;
+}
+
+int vg_draw_pattern(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
+  uint16_t width = XRes / no_rectangles;
+  uint16_t height = YRes / no_rectangles;
+  uint32_t color = first, green, blue, red;
+
+  for (int row = 0; row < no_rectangles; ++row) {
+    for (int col = 0; col < no_rectangles; ++col) {
+      if (mode == 0x105) {
+        color = (first + (row * no_rectangles + col) * step) % (1 << vmi_p.BitsPerPixel);
+      }
+      else {
+        uint32_t r = (first >> vmi_p.RedFieldPosition) % BIT(vmi_p.RedMaskSize);
+        uint32_t g = (first >> vmi_p.GreenFieldPosition) % BIT(vmi_p.GreenMaskSize);
+        uint32_t b = (first >> vmi_p.BlueFieldPosition) % BIT(vmi_p.BlueMaskSize);
+        red = (r + (col * step)) % (1 << vmi_p.RedMaskSize);
+        green = (g + (row * step)) % (1 << vmi_p.GreenMaskSize);
+        blue = (b + ((col + row) * step)) % (1 << vmi_p.BlueMaskSize);
+        color = ((red << vmi_p.RedFieldPosition) | (green << vmi_p.GreenFieldPosition) | (blue << vmi_p.BlueFieldPosition));
+      }
+      if (vg_draw_rectangle(width * row, height * col, width, height, color) != 0) {
+        printf("error in video_test_pattern");
+        return 1;
+      }
+    }
   }
   return 0;
 }
