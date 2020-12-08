@@ -1,9 +1,6 @@
 #include "graphics_mode.h"
 
-static char *video_mem; /* Process (virtual) address to which VRAM is mapped */
-static unsigned h_res;		/* Horizontal screen resolution in pixels */
-static unsigned v_res;		/* Vertical screen resolution in pixels */
-vbe_mode_info_t data;
+
 
 
 void*(vg_init)(uint16_t	mode){ 
