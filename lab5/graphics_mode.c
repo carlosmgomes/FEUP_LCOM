@@ -3,7 +3,6 @@
 static char *video_mem; /* Process (virtual) address to which VRAM is mapped */
 static unsigned h_res;		/* Horizontal screen resolution in pixels */
 static unsigned v_res;		/* Vertical screen resolution in pixels */
-static unsigned bits_per_pixel; /* Number of VRAM bits per pixel */
 vbe_mode_info_t data;
 
 
