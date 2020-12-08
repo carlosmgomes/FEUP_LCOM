@@ -12,6 +12,7 @@ uint16_t XRes;
 uint16_t YRes;
 uint8_t  bits_per_pixel;
 vbe_mode_info_t vmi_p;
+static char *video_mem; 
 
 int vbe_int_10(uint16_t mode);
 void*(vg_init)(uint16_t	mode);
