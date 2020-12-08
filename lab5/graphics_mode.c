@@ -1,5 +1,12 @@
 #include "graphics_mode.h"
 
+static char *video_mem; /* Process (virtual) address to which VRAM is mapped */
+static unsigned h_res;		/* Horizontal screen resolution in pixels */
+static unsigned v_res;		/* Vertical screen resolution in pixels */
+static unsigned bits_per_pixel; /* Number of VRAM bits per pixel */
+vbe_mode_info_t data;
+
+
 void*(vg_init)(uint16_t	mode){ 
     if(vbe_int_10(mode)){        
         printf("vbe_int_10 ERROR");
@@ -50,4 +57,38 @@ int vbe_int_10(uint16_t mode){
         return 1;
     }
     return 0;
+}
+
+int draw_pixel(uint16_t x, uint16_t y, uint32_t color) {
+  if (x >= data.XResolution)
+    return 0;
+  memcpy(video_mem + (x + data.XResolution * y) * ((data.BitsPerPixel + 7) / 8), &color, ((data.BitsPerPixel + 7) / 8));
+  return 0;
+}
+
+int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
+  int i;
+  for (i = 0; i < len; i++) {
+    draw_pixel(x + i, y, color);
+    printf("printh:%d,%d\n", x + i, y);
+  }
+  return 0;
+}
+
+int(vg_draw_vline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
+  int i;
+  for (i = 0; i < len; i++) {
+    draw_pixel(x, y + i, color);
+    printf("printv:%d,%d\n", x, y + i);
+  }
+  return 0;
+}
+
+int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      draw_pixel(x + j, y + i, color);
+    }
+  }
+  return 0;
 }
