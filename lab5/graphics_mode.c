@@ -88,3 +88,17 @@ int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, 
   }
   return 0;
 }
+
+int draw_pixmap(uint8_t *map, xpm_image_t img, uint16_t x, uint16_t y)
+{
+  for(size_t i=0; i < img.height; i++)
+  {
+      if ((y+i) >= YRes) break;
+      for(size_t j=0; j < img.width; j++)
+      {
+          if ((x+j) >= Xres) break; 
+          draw_pixel((x+j), (y+i), *(map + j + i*img.width));
+      }
+  }
+  return 0;
+}
