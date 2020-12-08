@@ -54,7 +54,7 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
 
     vg_draw_rectangle(x, y, width, height, color);
   
-    keyboard_subscribe_int(&irq_set);
+    kbc_subscribe_int(&irq_set);
 
     while(scancode != 0x81)
     {
@@ -80,7 +80,7 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
           }
         }
     }
-    keyboard_unsubscribe_int();
+    kbc_unsubscribe_int();
     if(vg_exit()){return 1;}
 
     return 0;
