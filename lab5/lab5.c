@@ -81,6 +81,7 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
     }
   }
   kbc_unsubscribe_int();
+  sleep(5);
   if (vg_exit()) {
     return 1;
   }
