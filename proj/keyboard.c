@@ -3,10 +3,7 @@
 #include <keyboard.h>
 
 
-
-int kbd_hid = 1;
-uint8_t scancode;
-bool error = false;
+int kbd_hid=1;
 
 int (kbc_subscribe_int) (uint8_t *bit_no) {
   *bit_no = (uint8_t) kbd_hid;
@@ -33,26 +30,47 @@ int (kbc_unsubscribe_int)() {
 
 int (get_kdb_scancode)(uint8_t *scancode) {
   uint8_t stat, data;
-    
-  util_sys_inb(KBC_SR, &stat);  
-  
-  if (stat & KBC_OBF) {  	// Check if output buffer is full
-    util_sys_inb(KBC_OB, &data);  // read scancode
-    if ((stat & (KBC_PARITY | KBC_TIMEOUT)) == 0) { // if either one are set to 1, it gives an error
-      scancode = data;
+  int attemptcount = 0;
+  while (attemptcount < 3) {
+    attemptcount++;
+    util_sys_inb(KBC_SR, &stat);  
+    siCounter++;
+    if (stat & KBC_OBF) {  	// Check if output buffer is full
+      util_sys_inb(KBC_OB, &data);  // read scancode
+      siCounter++;
+      if ((stat & (KBC_PARITY | KBC_TIMEOUT)) == 0) { // if either one are set to 1, it gives an error
+        *scancode = data;
+        return 0;
 		}
-    else{
-      error = true;
-      return
-      }
-   }
-   else{
-      error = true;
-      return
-      }
-      error = false;
+      break;
+    }
+    tickdelay(micros_to_ticks(KBD_DELAY));
   }
+  return -1;
+}
 
 void (kbc_ih)() {
+  uint8_t data;
+
+  if (done)
+    size = 0;
   get_kdb_scancode(&data);
+  if (data & KBC_PARITY)
+    make = false;
+  else
+    make = true;
+  if (data == 0xE0) {
+    scancode[0] = data;
+    size++;
+    done = false;
+    return;
+  }
+  else {
+    scancode[size] = data;
+    size++;
+    done = true;
+    return;
+  }
+ 
+  return;
 }

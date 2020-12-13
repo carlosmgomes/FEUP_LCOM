@@ -45,6 +45,7 @@ void *(vg_init)(uint16_t mode) {
     panic("sys_privctl (ADD_MEM) failed: %d\n", r); /*Map memory*/
   }
   video_mem = vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
+  double_buffer=(char*) malloc(vram_size);
   if (video_mem == MAP_FAILED) {
     panic("couldn’t map video memory");
   }
@@ -98,7 +99,7 @@ int vg_draw_xpm(xpm_map_t xpm, uint16_t x, uint16_t y) {
   xpm_image_t img;
   uint8_t *sprite;
   unsigned int index = 0;
-  sprite = xpm_load(xpm, XPM_8_8_8_8, &img);
+  sprite = xpm_load(xpm, XPM_8_8_8, &img);
   for (unsigned i = 0; i < img.height; ++i) {
     for (unsigned j = 0; j < img.width; ++j) {
       if (pixel_color(x + j, y + i, img.bytes[index]) != 0) {

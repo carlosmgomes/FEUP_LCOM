@@ -67,18 +67,9 @@ int(proj_main_loop)(int argc, char *argv[]) {
   return proj_demo(mode, minix3_logo, grayscale, delay);*/
 
   init_graphics_mode();
-  printf("graphics on");
-    vg_draw_rectangle(0,0,XRes,YRes,0x222222);
-sleep(3);
   Game *game = (Game *) initiate_game();
-  while (!game->done) {
-    update_game(game);
-
-    if (!game->done) {
-      display_game(game);
-    }
-  }
-  exit_game(game);
+  display_game(game);
+  sleep(3);
   vg_exit();
   return 0;
 }

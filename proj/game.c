@@ -2,13 +2,12 @@
 #include <lcom/liblm.h>
 #include <lcom/proj.h>
 
-#include "bitmap.h"
 #include "game.h"
 #include <stdbool.h>
 #include <stdint.h>
 
 int init_graphics_mode() {
-  uint16_t mode = 0x11a;
+  uint16_t mode = 0x115;
   vg_init(mode);
   if (vbe_int_10(mode) != 0) {
     return 1;
@@ -16,7 +15,8 @@ int init_graphics_mode() {
   return 0;
 }
 
-Game *initiate_game() {
+
+  Game *initiate_game() {
   Game *game = (Game *) malloc(sizeof(Game));
 
   game->done = false;
@@ -24,7 +24,7 @@ Game *initiate_game() {
   game->kbd_scancode = 0;
   uint8_t bit_num = 0;
 
-  game->IRQ_KB = if (kbc_subscribe_int(&bit_num)){
+  if (kbc_subscribe_int(&bit_num)){
     printf("kbc_subscribe_int error");
   }
   return game;
@@ -34,6 +34,7 @@ void update_game(Game *game) {
   int ipc_status;
   message msg;
   int r;
+    uint32_t irq_set = BIT(0);
 
   if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
     printf("driver_receive failed with: %d", r);
@@ -41,9 +42,9 @@ void update_game(Game *game) {
   if (is_ipc_notify(ipc_status)) { /* received notification */
     switch (_ENDPOINT_P(msg.m_source)) {
       case HARDWARE:                             /* hardware interrupt notification */
-        if (msg.m_notify.interrupts & game->IRQ_KB) { /* subscribed interrupt */
+        if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
           kbc_ih();
-          game->kbd_scancode= scancode;
+          game->kbd_scancode=scancode[0];
           break;
         }
       default:
@@ -59,7 +60,8 @@ void update_game(Game *game) {
 }
 
 void display_game(Game *game){
-  vg_draw_rectangle(0,0,XRes,YRes,0x222222);
+Disc *d= create_disc();
+draw_disc(d);
 }
 
 void exit_game(Game* game){

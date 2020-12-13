@@ -3,12 +3,14 @@
 #include "keyboard.h"
 #include "timer.h"
 #include "mouse.h"
+#include "sprite.h"
+#include "xpm.h"
 
 typedef struct{
-  int IRQ_KB;
-  bool done, display;
-  unsigned long kbd_scancode;
-} Game;
+
+bool done,display;
+uint8_t kbd_scancode;
+}Game;
 
 Game* initiate_game();
 void update_game(Game* game);
