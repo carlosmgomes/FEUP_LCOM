@@ -4,24 +4,21 @@
 #include <stdint.h>
 
 
-uint32_t siCounter;
-uint8_t scancode[2];
-
+uint8_t scancode;
 
 int (kbc_subscribe_int) (uint8_t *bit_no);
 
 int (kbc_unsubscribe_int)();
 
+void (kbc_ih)();
 
 int (get_kdb_scancode)(uint8_t *scancode);
+
 void kdb_enable_interruptions();
 
-uint8_t size;
-bool done;
-bool make;
 
 
-void (kbc_ih)();
 
 
 #endif /* __KEYBOARD_H */
+
