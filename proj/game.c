@@ -24,7 +24,7 @@ Game *initiate_game() {
   game->kbd_scancode = 0;
   uint8_t bit_num = 0;
 
-  if (kbc_subscribe_int(&bit_num)){
+  game->IRQ_KB = if (kbc_subscribe_int(&bit_num)){
     printf("kbc_subscribe_int error");
   }
   return game;
@@ -34,7 +34,6 @@ void update_game(Game *game) {
   int ipc_status;
   message msg;
   int r;
-    uint32_t irq_set = BIT(0);
 
   if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
     printf("driver_receive failed with: %d", r);
@@ -42,9 +41,9 @@ void update_game(Game *game) {
   if (is_ipc_notify(ipc_status)) { /* received notification */
     switch (_ENDPOINT_P(msg.m_source)) {
       case HARDWARE:                             /* hardware interrupt notification */
-        if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
+        if (msg.m_notify.interrupts & game->IRQ_KB) { /* subscribed interrupt */
           kbc_ih();
-          game->kbd_scancode=scancode[size];
+          game->kbd_scancode= scancode;
           break;
         }
       default:
