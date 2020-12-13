@@ -5,10 +5,10 @@
 #include "mouse.h"
 
 typedef struct{
-
-bool done,display;
-uint8_t kbd_scancode;
-}Game;
+  int IRQ_KB;
+  bool done, display;
+  unsigned long kbd_scancode;
+} Game;
 
 Game* initiate_game();
 void update_game(Game* game);
