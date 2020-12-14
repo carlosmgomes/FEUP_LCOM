@@ -64,6 +64,7 @@ int update_game(Game *game) {
                   break;
                 }
                 display_game(game);
+                draw_disc(d);
               }
             }
           }
@@ -80,7 +81,7 @@ int update_game(Game *game) {
 }
 
 void display_game(Game *game) {
-  vg_draw_rectangle(0, 0, XRes, YRes, 0xffc000);
+  vg_draw_rectangle(0, 0, XRes, YRes, 0x000000);
 }
 
 void exit_game(Game *game) {
