@@ -35,3 +35,11 @@ int delete_disc(Disc *d) {
   free(d);
   return 0;
 }
+
+void move_disc_right(Disc *d){
+  if (d->x <= XRes*0.65) d->x += XRes*0.1;
+}
+
+void move_disc_left(Disc *d){
+  if (d->x >= XRes*0.15) d->x -= XRes*0.1;
+}
