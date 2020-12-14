@@ -67,9 +67,10 @@ int(proj_main_loop)(int argc, char *argv[]) {
   return proj_demo(mode, minix3_logo, grayscale, delay);*/
 
   init_graphics_mode();
+  vg_draw_rectangle(0, 0, XRes, YRes, 0x00fff0);
   Game *game = (Game *) initiate_game();
-  display_game(game);
-  sleep(3);
+  update_game(game);
+  exit_game(game);
   vg_exit();
   return 0;
 }

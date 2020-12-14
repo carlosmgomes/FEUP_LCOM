@@ -5,7 +5,8 @@
 
 
 uint32_t siCounter;
-uint8_t scancode[2];
+uint8_t scancode_byte[2];
+uint8_t scancode;
 
 
 int (kbc_subscribe_int) (uint8_t *bit_no);
@@ -13,10 +14,10 @@ int (kbc_subscribe_int) (uint8_t *bit_no);
 int (kbc_unsubscribe_int)();
 
 
-int (get_kdb_scancode)(uint8_t *scancode);
+int (get_kdb_scancode)(uint8_t *code);
 
 uint8_t size;
-bool done;
+bool kbd_done;
 bool make;
 
 

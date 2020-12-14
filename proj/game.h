@@ -8,12 +8,13 @@
 
 typedef struct{
 
+int KBD_SET_IRQ;
 bool done,display;
 uint8_t kbd_scancode;
 }Game;
 
 Game* initiate_game();
-void update_game(Game* game);
+int update_game(Game* game);
 void display_game(Game* game);
 void exit_game(Game* game);
 int init_graphics_mode();

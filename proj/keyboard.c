@@ -20,10 +20,6 @@ int (kbc_unsubscribe_int)() {
     printf("sys_irqrmpolicy error");
     return 1;
   }
-  if(sys_irqdisable(&kbd_hid)){
-    printf("sys_irqdisable error");
-    return 1;
-  }
   return 0;
 }
 
@@ -52,7 +48,7 @@ int (get_kdb_scancode)(uint8_t *scancode) {
 void (kbc_ih)() {
   uint8_t data;
 
-  if (done)
+  if (kbd_done)
     size = 0;
   get_kdb_scancode(&data);
   if (data & KBC_PARITY)
@@ -60,15 +56,16 @@ void (kbc_ih)() {
   else
     make = true;
   if (data == 0xE0) {
-    scancode[0] = data;
+    scancode_byte[0] = data;
     size++;
-    done = false;
+    kbd_done = false;
     return;
   }
   else {
-    scancode[size] = data;
+    scancode_byte[size] = data;
+    scancode=scancode_byte[size];
     size++;
-    done = true;
+    kbd_done = true;
     return;
   }
  
