@@ -31,9 +31,9 @@ Disc *create_disc();
 
 void destroy_disc(Disc *d);
 
-int move_disc_right(Disc *d);
+void move_disc_right(Disc *d);
 
-int move_disc_left(Disc *d);
+void move_disc_left(Disc *d);
 /** @} end of sprite */
 
 int draw_disc(Disc *d);
