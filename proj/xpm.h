@@ -1,3 +1,3 @@
 #pragma once
 
-#include "/home/lcom/labs/proj/img/circle.xpm"
+#include "/home/lcom/labs/proj/img/yellow_disc.xpm"

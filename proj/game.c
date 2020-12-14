@@ -23,7 +23,8 @@ Game *initiate_game() {
   game->kbd_scancode = 0;
   uint8_t bit_num = 0;
   game->KBD_SET_IRQ = kbc_subscribe_int(&bit_num);
-
+  game->yellow = create_disc();
+  draw_disc(game->yellow);
   return game;
 }
 
@@ -51,11 +52,13 @@ int update_game(Game *game) {
               game->kbd_scancode = scancode;
               if (game->kbd_scancode != 0) {
                 if (game->kbd_scancode == 0x4B) { // left
-                move_disc_left(d);
+                vg_draw_rectangle(0,0,XRes,YRes,0);
+                move_disc_left(game->yellow);
                 break;
               }
                 if (game->kbd_scancode == 0x4D) { // right
-                move_disc_right(d);
+                vg_draw_rectangle(0,0,XRes,YRes,0);
+                move_disc_right(game->yellow);
                 break;
               }
                 if (game->kbd_scancode == KBD_ESC) {
@@ -64,7 +67,6 @@ int update_game(Game *game) {
                   break;
                 }
                 display_game(game);
-                draw_disc(d);
               }
             }
           }
@@ -81,7 +83,7 @@ int update_game(Game *game) {
 }
 
 void display_game(Game *game) {
-  vg_draw_rectangle(0, 0, XRes, YRes, 0x000000);
+  draw_disc(game->yellow);
 }
 
 void exit_game(Game *game) {

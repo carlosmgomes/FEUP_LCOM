@@ -19,7 +19,8 @@
  */
 typedef struct {
   int x,y;             /**< current sprite position */
-  xpm_image_t disc[2];           /**< the sprite pixmap (use read_xpm()) */
+  xpm_image_t img; /**< the sprite pixmap (use read_xpm()) */
+  uint8_t *map;           
 } Disc;
 
 /** Creates with random speeds (not zero) and position
@@ -29,7 +30,7 @@ typedef struct {
  */
 Disc *create_disc();
 
-void destroy_disc(Disc *d);
+int delete_disc(Disc *d);
 
 void move_disc_right(Disc *d);
 

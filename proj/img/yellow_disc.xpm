@@ -1,7 +1,7 @@
 /* XPM */
-static const char * circle[] = {
+static const char * yellow_disc[] = {
 "70 70 2 1",
-" 	c None",
+" 	c #000000",
 ".	c #FFC000",
 "                            ..............                            ",
 "                         ....................                         ",
