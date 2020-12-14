@@ -50,6 +50,14 @@ int update_game(Game *game) {
             if (kbd_done) {
               game->kbd_scancode = scancode;
               if (game->kbd_scancode != 0) {
+                if (game->kbd_scancode == 0x4B) { // left
+                move_disc_left(d);
+                break;
+              }
+                if (game->kbd_scancode == 0x4D) { // right
+                move_disc_right(d);
+                break;
+              }
                 if (game->kbd_scancode == KBD_ESC) {
                   game->done = true;
                   printf("ESC detected");
