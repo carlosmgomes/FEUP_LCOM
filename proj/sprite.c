@@ -10,10 +10,10 @@
 
 extern uint8_t bits_per_pixel;
 
-Disc *create_disc() {
+Disc *create_disc(const char *circle[]) {
   //allocate space for the "disc"
   Disc *d = (Disc *) malloc(sizeof(Disc));
-  d->map = xpm_load(yellow_disc, XPM_8_8_8, &(d->img));
+  d->map = xpm_load(circle, XPM_8_8_8, &(d->img));
   d->x = XRes * 0.15;
   d->y = 5;
   return d;

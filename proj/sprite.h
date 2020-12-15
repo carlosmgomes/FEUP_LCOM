@@ -28,7 +28,7 @@ typedef struct {
  * memory whose address is "base";
  * Returns NULL on invalid pixmap.
  */
-Disc *create_disc();
+Disc *create_disc(const char *circle[]);
 
 int delete_disc(Disc *d);
 

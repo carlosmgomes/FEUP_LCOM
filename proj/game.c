@@ -23,7 +23,10 @@ Game *initiate_game() {
   game->kbd_scancode = 0;
   uint8_t bit_num = 0;
   game->KBD_SET_IRQ = kbc_subscribe_int(&bit_num);
-  game->yellow = create_disc();
+  game->yellow = create_disc(yellow_disc);
+  game->red = create_disc(red_disc);
+  game->yellow_turn = true;
+  game->red_turn = false;
   draw_disc(game->yellow);
   return game;
 }
@@ -51,16 +54,20 @@ int update_game(Game *game) {
             if (kbd_done) {
               game->kbd_scancode = scancode;
               if (game->kbd_scancode != 0) {
+                if (game->kbd_scancode == 0x1C) {
+                  change_turn(game);
+                  vg_draw_rectangle(0, 0, XRes, YRes, 0);
+                }
                 if (game->kbd_scancode == 0x4B) { // left
-                vg_draw_rectangle(0,0,XRes,YRes,0);
-                move_disc_left(game->yellow);
-                break;
-              }
+                  vg_draw_rectangle(0, 0, XRes, YRes, 0);
+                  check_turn_left(game);
+                  break;
+                }
                 if (game->kbd_scancode == 0x4D) { // right
-                vg_draw_rectangle(0,0,XRes,YRes,0);
-                move_disc_right(game->yellow);
-                break;
-              }
+                  vg_draw_rectangle(0, 0, XRes, YRes, 0);
+                  check_turn_right(game);
+                  break;
+                }
                 if (game->kbd_scancode == KBD_ESC) {
                   game->done = true;
                   printf("ESC detected");
@@ -79,11 +86,43 @@ int update_game(Game *game) {
   if (kbc_unsubscribe_int())
     return 1;
 
-    return 0;
+  return 0;
+}
+
+void check_turn_draw(Game *game) {
+  if (game->red_turn) {
+    draw_disc(game->red);
+  }
+  if (game->yellow_turn) {
+    draw_disc(game->yellow);
+  }
+}
+
+void check_turn_right(Game *game) {
+  if (game->red_turn) {
+    move_disc_right(game->red);
+  }
+  if (game->yellow_turn) {
+    move_disc_right(game->yellow);
+  }
+}
+
+void check_turn_left(Game *game) {
+  if (game->red_turn) {
+    move_disc_left(game->red);
+  }
+  if (game->yellow_turn) {
+    move_disc_left(game->yellow);
+  }
+}
+
+void change_turn(Game *game) {
+  game->red_turn = !game->red_turn;
+  game->yellow_turn = !game->yellow_turn;
 }
 
 void display_game(Game *game) {
-  draw_disc(game->yellow);
+  check_turn_draw(game);
 }
 
 void exit_game(Game *game) {
