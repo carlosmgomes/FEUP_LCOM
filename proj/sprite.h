@@ -34,6 +34,8 @@ int delete_disc(Disc *d);
 
 void move_disc_right(Disc *d);
 
+void move_disc_down(Disc *d);
+
 void move_disc_left(Disc *d);
 /** @} end of sprite */
 
