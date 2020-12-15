@@ -28,7 +28,7 @@ Game *initiate_game() {
   game->board = create_board();
   game->yellow_turn = true;
   game->red_turn = false;
-  draw_board(game->board);
+  //draw_board(game->board);
   return game;
 }
 
@@ -122,6 +122,16 @@ void check_turn_left(Game *game) {
 }
 
 void change_turn(Game *game) {
+  if (game->yellow_turn){
+    move_disc_down(game->yellow);
+    draw_disc(game->yellow);
+    game->yellow->y = 5;
+  }
+  else{
+    move_disc_down(game->red);
+    draw_disc(game->red);
+    game->red->y = 5;
+  }
   game->red_turn = !game->red_turn;
   game->yellow_turn = !game->yellow_turn;
 }
