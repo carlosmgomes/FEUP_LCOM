@@ -54,6 +54,9 @@ void move_disc_left(Disc *d) {
     d->x -= XRes * 0.1;
 }
 
+void move_disc_down(Disc *d) {
+  d->y = YRes * 0.85;
+}
 
 Board *create_board() {
   //allocate space for the "disc"
