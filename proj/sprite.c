@@ -53,3 +53,38 @@ void move_disc_left(Disc *d) {
   if (d->x >= XRes * 0.15)
     d->x -= XRes * 0.1;
 }
+
+
+Board *create_board() {
+  //allocate space for the "disc"
+  Board *board = (Board *) malloc(sizeof(Board));
+  board->map = xpm_load(game_board, XPM_8_8_8, &(board->img));
+  board->x = (XRes * 0.15)-5;
+  board->y = 85;
+  return board;
+}
+
+int draw_board(Board *board) {
+  uint8_t *map = board->map;
+  uint32_t color;
+  unsigned bpp = bits_per_pixel / 8;
+
+  for (int y = 0; y < board->img.height; y++) {
+    for (int x = 0; x < board->img.width; x++) {
+      color = 0;
+      for (unsigned b = 0; b < bpp; b++) {
+        color += *(map + b) << b * 8;
+      }
+      if (color != xpm_transparency_color(XPM_8_8_8)) {
+        pixel_color(board->x + x, board->y + y, color);
+        map += bpp;
+      }
+    }
+  }
+  return 0;
+}
+
+int delete_board(Board *board) {
+  free(board);
+  return 0;
+}

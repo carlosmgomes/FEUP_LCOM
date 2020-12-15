@@ -25,9 +25,10 @@ Game *initiate_game() {
   game->KBD_SET_IRQ = kbc_subscribe_int(&bit_num);
   game->yellow = create_disc(yellow_disc);
   game->red = create_disc(red_disc);
+  game->board = create_board();
   game->yellow_turn = true;
   game->red_turn = false;
-  draw_disc(game->yellow);
+  draw_board(game->board);
   return game;
 }
 
@@ -57,14 +58,18 @@ int update_game(Game *game) {
                 if (game->kbd_scancode == 0x1C) {
                   change_turn(game);
                   vg_draw_rectangle(0, 0, XRes, YRes, 0);
+                  draw_board(game->board);
                 }
                 if (game->kbd_scancode == 0x4B) { // left
                   vg_draw_rectangle(0, 0, XRes, YRes, 0);
+                  draw_board(game->board);
+
                   check_turn_left(game);
                   break;
                 }
                 if (game->kbd_scancode == 0x4D) { // right
                   vg_draw_rectangle(0, 0, XRes, YRes, 0);
+                  draw_board(game->board);
                   check_turn_right(game);
                   break;
                 }

@@ -67,9 +67,14 @@ int(proj_main_loop)(int argc, char *argv[]) {
   return proj_demo(mode, minix3_logo, grayscale, delay);*/
 
   init_graphics_mode();
+  
   Game *game = (Game *) initiate_game();
   update_game(game);
-  exit_game(game);
+  exit_game(game);/*
+  Disc *board = create_disc(game_board);
+  draw_disc(board);
+  sleep(3);*/
+
   vg_exit();
   return 0;
 

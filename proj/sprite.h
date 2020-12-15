@@ -39,4 +39,24 @@ void move_disc_left(Disc *d);
 
 int draw_disc(Disc *d);
 
+
+typedef struct {
+  int x,y;             /**< current sprite position */
+  xpm_image_t img; /**< the sprite pixmap (use read_xpm()) */
+  uint8_t *map;           
+} Board;
+
+/** Creates with random speeds (not zero) and position
+ * (within the screen limits), a new sprite with pixmap "pic", in
+ * memory whose address is "base";
+ * Returns NULL on invalid pixmap.
+ */
+Board *create_board();
+
+int delete_board(Board *board);
+
+/** @} end of sprite */
+
+int draw_board(Board *board);
+
 #endif

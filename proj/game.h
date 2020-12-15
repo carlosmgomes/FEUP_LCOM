@@ -11,6 +11,7 @@ typedef struct{
 int KBD_SET_IRQ;
 bool done,display,red_turn,yellow_turn;
 uint8_t kbd_scancode;
+Board *board;
 Disc *yellow;
 Disc *red;
 }Game;
