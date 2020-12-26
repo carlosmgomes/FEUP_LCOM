@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+extern unsigned int counter;
+
 int init_graphics_mode() {
   uint16_t mode = 0x115;
   vg_init(mode);
@@ -33,18 +35,19 @@ Game *initiate_game() {
 }
 
 int update_game(Game *game) {
-  uint8_t kbd_bit_num = 0,mouse_bit_num=0;
+  uint8_t kbd_bit_num = 0, mouse_bit_num = 0, timer_bit_num = 0;
   int ipc_status;
   message msg;
   int r;
   int pCounter = 0;
+  timer_subscribe_int(&timer_bit_num);
+  uint32_t timer_irq_set = BIT(timer_bit_num);
 
-  if (kbc_subscribe_int(&kbd_bit_num))
-    return 1;
+  kbc_subscribe_int(&kbd_bit_num);
   uint32_t kbd_irq_set = BIT(kbd_bit_num);
 
   mouse_subscribe_int(&mouse_bit_num);
-    uint32_t mouse_irq_set = BIT(mouse_bit_num);
+  uint32_t mouse_irq_set = BIT(mouse_bit_num);
 
   mouse_enable_data();
 
@@ -55,7 +58,7 @@ int update_game(Game *game) {
     }
     if (is_ipc_notify(ipc_status)) { /* received notification */
       switch (_ENDPOINT_P(msg.m_source)) {
-        case HARDWARE:                             /* hardware interrupt notification */
+        case HARDWARE:                                 /* hardware interrupt notification */
           if (msg.m_notify.interrupts & kbd_irq_set) { /* subscribed interrupt */
             kbc_ih();
             if (kbd_done) {
@@ -88,20 +91,28 @@ int update_game(Game *game) {
               }
             }
           }
-          if (msg.m_notify.interrupts & mouse_irq_set){
+          if (msg.m_notify.interrupts & mouse_irq_set) {
             mouse_ih();
-					  game->mouse->pack[pCounter] = packet_byte;
+            game->mouse->pack[pCounter] = packet_byte;
 
-					if ((game->mouse->pack[0] & BIT(3)) == 0) {
-						pCounter = 0;
-					} 
-          else {
-						if (pCounter == 2) {
-							display_game(game);
-							pCounter = 0;
-						} else
-							pCounter++;
-					}
+            if ((game->mouse->pack[0] & BIT(3)) == 0) {
+              pCounter = 0;
+            }
+            else {
+              if (pCounter == 2) {
+                display_game(game);
+                pCounter = 0;
+              }
+              else
+                pCounter++;
+            }
+          }
+          if (msg.m_notify.interrupts & timer_irq_set) {
+            timer_int_handler();
+            if (counter % (sys_hz()/10) == 0) {
+              // draw
+               double_buffer_update();
+            }
           }
         default:
           break;
@@ -109,10 +120,9 @@ int update_game(Game *game) {
     }
   }
 
-  if (kbc_unsubscribe_int())
-    return 1;
-
+  kbc_unsubscribe_int();
   mouse_unsubscribe_int();
+  timer_unsubscribe_int();
   mouse_disable_data_reporting();
 
   return 0;
@@ -146,12 +156,12 @@ void check_turn_left(Game *game) {
 }
 
 void change_turn(Game *game) {
-  if (game->yellow_turn){
+  if (game->yellow_turn) {
     move_disc_down(game->yellow);
     draw_disc(game->yellow);
     game->yellow->y = 5;
   }
-  else{
+  else {
     move_disc_down(game->red);
     draw_disc(game->red);
     game->red->y = 5;

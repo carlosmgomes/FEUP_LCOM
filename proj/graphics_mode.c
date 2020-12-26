@@ -67,7 +67,7 @@ int vbe_int_10(uint16_t mode) {
 
 int(pixel_color)(uint16_t x, uint16_t y, uint32_t color) {
   unsigned bytes_per_pixel = ceil(bits_per_pixel / 8);
-  char *ptr = video_mem;
+  char *ptr = double_buffer;
 
   ptr += (x + XRes * y) * (bytes_per_pixel);
 
@@ -137,4 +137,9 @@ int vg_draw_pattern(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_
     }
   }
   return 0;
+}
+
+
+void double_buffer_update(){
+  memcpy(video_mem,double_buffer,(XRes * YRes) * ceil((bits_per_pixel / 8)));
 }
