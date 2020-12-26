@@ -15,9 +15,10 @@ int init_graphics_mode() {
   return 0;
 }
 
+extern uint8_t packet_byte;
+
 Game *initiate_game() {
   Game *game = (Game *) malloc(sizeof(Game));
-
   game->done = false;
   game->display = true;
   game->kbd_scancode = 0;
@@ -28,6 +29,7 @@ Game *initiate_game() {
   game->board = create_board();
   game->yellow_turn = true;
   game->red_turn = false;
+  game->mouse = new_mouse();
   //draw_board(game->board);
   return game;
 }
@@ -37,10 +39,14 @@ int update_game(Game *game) {
   int ipc_status;
   message msg;
   int r;
+  int pCounter = 0;
 
   if (kbc_subscribe_int(&bit_num))
     return 1;
   uint32_t irq_set = BIT(bit_num);
+
+  mouse_subscribe_int(&game->MOUSE_SET_IRQ);
+  mouse_enable_data();
 
   while (!game->done) {
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
@@ -82,6 +88,21 @@ int update_game(Game *game) {
               }
             }
           }
+          if (msg.m_notify.interrupts & game->MOUSE_SET_IRQ){
+            mouse_ih();
+					  game->mouse->pack[pCounter] = packet_byte;
+
+					if ((game->mouse->pack[0] & BIT(3)) == 0) {
+						pCounter = 0;
+					} 
+          else {
+						if (pCounter == 2) {
+							display_game(game);
+							pCounter = 0;
+						} else
+							pCounter++;
+					}
+          }
         default:
           break;
       }
@@ -91,6 +112,7 @@ int update_game(Game *game) {
   if (kbc_unsubscribe_int())
     return 1;
 
+  mouse_unsubscribe_int();
   return 0;
 }
 
@@ -138,6 +160,7 @@ void change_turn(Game *game) {
 
 void display_game(Game *game) {
   check_turn_draw(game);
+  draw_mouse(game->mouse);
 }
 
 void exit_game(Game *game) {
