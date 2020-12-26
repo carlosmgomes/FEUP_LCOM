@@ -6,6 +6,15 @@
 
 typedef enum{INIT, DRAWUP, HALF, DRAWDOWN} States;
 
+typedef struct {
+    int x, y;
+    int w, h;
+    int lb;
+    uint8_t pack[3];
+} Mouse;
+
+Mouse* new_mouse();
+void draw_mouse(Mouse* mouse);
 uint8_t packet_byte;
 int (mouse_subscribe_int) (uint8_t *bit_no);
 int (mouse_unsubscribe_int)();
