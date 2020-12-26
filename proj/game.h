@@ -5,15 +5,18 @@
 #include "mouse.h"
 #include "sprite.h"
 #include "xpm.h"
+#include "mouse.h"
 
 typedef struct{
 
 int KBD_SET_IRQ;
+uint8_t MOUSE_SET_IRQ;
 bool done,display,red_turn,yellow_turn;
 uint8_t kbd_scancode;
 Board *board;
 Disc *yellow;
 Disc *red;
+Mouse *mouse;
 }Game;
 
 Game* initiate_game();
