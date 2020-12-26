@@ -9,8 +9,6 @@
 
 typedef struct{
 
-int KBD_SET_IRQ;
-uint8_t MOUSE_SET_IRQ;
 bool done,display,red_turn,yellow_turn;
 uint8_t kbd_scancode;
 Board *board;

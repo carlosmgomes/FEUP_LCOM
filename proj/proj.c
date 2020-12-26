@@ -70,10 +70,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
   
   Game *game = (Game *) initiate_game();
   update_game(game);
-  exit_game(game);/*
-  Disc *board = create_disc(game_board);
-  draw_disc(board);
-  sleep(3);*/
+  exit_game(game);
 
   vg_exit();
   return 0;

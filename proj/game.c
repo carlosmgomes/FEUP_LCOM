@@ -22,30 +22,30 @@ Game *initiate_game() {
   game->done = false;
   game->display = true;
   game->kbd_scancode = 0;
-  uint8_t bit_num = 0;
-  game->KBD_SET_IRQ = kbc_subscribe_int(&bit_num);
   game->yellow = create_disc(yellow_disc);
   game->red = create_disc(red_disc);
   game->board = create_board();
   game->yellow_turn = true;
   game->red_turn = false;
   game->mouse = new_mouse();
-  //draw_board(game->board);
+  draw_board(game->board);
   return game;
 }
 
 int update_game(Game *game) {
-  uint8_t bit_num = 0;
+  uint8_t kbd_bit_num = 0,mouse_bit_num=0;
   int ipc_status;
   message msg;
   int r;
   int pCounter = 0;
 
-  if (kbc_subscribe_int(&bit_num))
+  if (kbc_subscribe_int(&kbd_bit_num))
     return 1;
-  uint32_t irq_set = BIT(bit_num);
+  uint32_t kbd_irq_set = BIT(kbd_bit_num);
 
-  mouse_subscribe_int(&game->MOUSE_SET_IRQ);
+  mouse_subscribe_int(&mouse_bit_num);
+    uint32_t mouse_irq_set = BIT(mouse_bit_num);
+
   mouse_enable_data();
 
   while (!game->done) {
@@ -56,26 +56,26 @@ int update_game(Game *game) {
     if (is_ipc_notify(ipc_status)) { /* received notification */
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:                             /* hardware interrupt notification */
-          if (msg.m_notify.interrupts & irq_set) { /* subscribed interrupt */
+          if (msg.m_notify.interrupts & kbd_irq_set) { /* subscribed interrupt */
             kbc_ih();
             if (kbd_done) {
               game->kbd_scancode = scancode;
               if (game->kbd_scancode != 0) {
-                if (game->kbd_scancode == 0x1C) {
+                if (game->kbd_scancode == 0x1C) { // enter pressed
                   change_turn(game);
-                  vg_draw_rectangle(0, 0, XRes, YRes, 0);
-                  draw_board(game->board);
+                  vg_draw_rectangle(0, 0, XRes, 80, 0);
+                  //draw_board(game->board);
                 }
                 if (game->kbd_scancode == 0x4B) { // left
-                  vg_draw_rectangle(0, 0, XRes, YRes, 0);
-                  draw_board(game->board);
+                  vg_draw_rectangle(0, 0, XRes, 80, 0);
+                  //draw_board(game->board);
 
                   check_turn_left(game);
                   break;
                 }
                 if (game->kbd_scancode == 0x4D) { // right
-                  vg_draw_rectangle(0, 0, XRes, YRes, 0);
-                  draw_board(game->board);
+                  vg_draw_rectangle(0, 0, XRes, 80, 0);
+                  //draw_board(game->board);
                   check_turn_right(game);
                   break;
                 }
@@ -88,7 +88,7 @@ int update_game(Game *game) {
               }
             }
           }
-          if (msg.m_notify.interrupts & game->MOUSE_SET_IRQ){
+          if (msg.m_notify.interrupts & mouse_irq_set){
             mouse_ih();
 					  game->mouse->pack[pCounter] = packet_byte;
 
@@ -113,6 +113,8 @@ int update_game(Game *game) {
     return 1;
 
   mouse_unsubscribe_int();
+  mouse_disable_data_reporting();
+
   return 0;
 }
 

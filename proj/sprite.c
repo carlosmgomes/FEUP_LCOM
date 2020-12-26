@@ -14,7 +14,7 @@ Disc *create_disc(const char *circle[]) {
   //allocate space for the "disc"
   Disc *d = (Disc *) malloc(sizeof(Disc));
   d->map = xpm_load(circle, XPM_8_8_8, &(d->img));
-  d->x = XRes * 0.15;
+  d->x = 122; // d->x = XRes * 0.15;
   d->y = 5;
   return d;
 }
@@ -45,13 +45,13 @@ int delete_disc(Disc *d) {
 }
 
 void move_disc_right(Disc *d) {
-  if (d->x <= XRes * 0.65)
-    d->x += XRes * 0.1;
+  if (d->x <= 610)  //  if (d->x <= XRes * 0.65)
+    d->x += 83;     //     d->x += XRes * 0.1;
 }
 
 void move_disc_left(Disc *d) {
-  if (d->x >= XRes * 0.15)
-    d->x -= XRes * 0.1;
+  if (d->x >= 123)  //   if (d->x >= XRes * 0.15)
+    d->x -= 83;     //     d->x -= XRes * 0.1;
 }
 
 void move_disc_down(Disc *d) {
