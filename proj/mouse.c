@@ -1,9 +1,46 @@
 #include <lcom/lcf.h>
 #include "i8042.h"
 #include "mouse.h"
+#include "graphics_mode.h"
 
 
 int mouse_hid=2;
+
+Mouse* new_mouse(){
+  Mouse* mouse = (Mouse*) malloc(sizeof(Mouse));
+
+  mouse->x = 50;
+  mouse->y = 50;
+  mouse->w = 10;
+  mouse->h = 10;
+  mouse->lb = 0;
+  return mouse;
+}
+
+void draw_mouse(Mouse* mouse) {
+	if (mouse->pack[0] & BIT(4))
+		mouse->x = mouse->x - ((mouse->pack[1] ^= 0xFF) + 1);
+	else
+		mouse->x = mouse->x + mouse->pack[1];
+
+	if (mouse->pack[0] & BIT(5))
+		mouse->y = mouse->y + ((mouse->pack[2] ^= 0xFF) + 1);
+	else
+		mouse->y = mouse->y - mouse->pack[2];
+
+	if (mouse->x < 0)
+		mouse->x = 0;
+	if (mouse->x > XRes - mouse->w)
+		mouse->x = XRes - mouse->w;
+	if (mouse->y < 0)
+		mouse->y = 0;
+	if (mouse->y > YRes - mouse->h)
+		mouse->y = YRes - mouse->h;
+  vg_draw_rectangle(mouse->x, mouse->y, mouse->w, mouse->h, 155);
+	return;
+
+}
+
 
 int (mouse_subscribe_int) (uint8_t *bit_no) {
   *bit_no = (uint8_t) mouse_hid;
