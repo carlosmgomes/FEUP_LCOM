@@ -20,7 +20,8 @@
 typedef struct {
   int x,y;             /**< current sprite position */
   xpm_image_t img; /**< the sprite pixmap (use read_xpm()) */
-  uint8_t *map;           
+  uint8_t *map;   
+  int column;        
 } Disc;
 
 /** Creates with random speeds (not zero) and position
@@ -42,10 +43,11 @@ void move_disc_left(Disc *d);
 int draw_disc(Disc *d);
 
 
-typedef struct {
+typedef struct { // 0 = empty, 1 = yellow, 2 = red;
   int x,y;             /**< current sprite position */
   xpm_image_t img; /**< the sprite pixmap (use read_xpm()) */
-  uint8_t *map;           
+  uint8_t *map;
+  uint8_t Column1[6], Column2[6], Column3[6], Column4[6], Column5[6], Column6[6], Column7[6];            
 } Board;
 
 /** Creates with random speeds (not zero) and position
