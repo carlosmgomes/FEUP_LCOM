@@ -47,6 +47,7 @@ bool check_win(Game* game, int row);
 bool check_win_diagonal(Game* game);
 void kbd_game_handler(Game* game);
 void mouse_game_handler(Game* game);
+void mouse_follow_disc(Game * game);
 
 
 
