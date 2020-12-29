@@ -144,6 +144,7 @@ void change_turn(Game *game) {
     display_game(game);
     draw_disc(game->red);
   }
+  //piece_animation(game);
   game->red_turn = !game->red_turn;
   game->yellow_turn = !game->yellow_turn;
 }
@@ -474,7 +475,8 @@ void kbd_game_handler(Game *game) {
   switch (game->state) {
     case GAME_STATE:
       if (game->kbd_scancode != 0) {
-        if (game->kbd_scancode == 0x1C) { // enter pressed
+        if(game->red_turn){
+          if (game->kbd_scancode == 0x1C) { // enter pressed
           if (check_turn(game))
             change_turn(game);
           vg_draw_rectangle(0, 0, XRes, 80, 0);
@@ -494,6 +496,7 @@ void kbd_game_handler(Game *game) {
           check_turn_right(game);
           break;
         }
+        }
         if (game->kbd_scancode == KBD_ESC) {
           game->state = MENU_STATE;
           vg_draw_rectangle(0, 0, XRes, YRes, 0);
@@ -510,6 +513,7 @@ void kbd_game_handler(Game *game) {
           delete_background(game->mainmenu);
           vg_draw_rectangle(0, 0, XRes, YRes, 0);
           draw_board(game->board);
+          init_board(game->board);
           game->state = GAME_STATE;
         }
         if (game->kbd_scancode == KBD_ESC) {
@@ -526,9 +530,17 @@ void kbd_game_handler(Game *game) {
   void mouse_game_handler(Game * game) {
     switch (game->state) {
       case GAME_STATE:
+        if(game->yellow_turn) {
+          if (game->mouse->pack[0] & BIT(0)) {
+			    if (check_turn(game))
+            change_turn(game);
+          vg_draw_rectangle(0, 0, XRes, 80, 0);
+          }
+        mouse_follow_disc(game);
         vg_draw_rectangle(0, 0, XRes, 80, 0);
         display_game(game);
         break;
+        }
       case MENU_STATE:
         if (play_choose(game->mouse)) {
           game->state = GAME_STATE;
@@ -543,3 +555,31 @@ void kbd_game_handler(Game *game) {
         break;
     }
   }
+
+
+// 122, 205, 288, 371, 454, 537, 620
+void mouse_follow_disc(Game * game){
+    if (game->mouse->x <= 163) {
+    game->yellow->column = 1;
+    game->yellow->x = 122;}
+    else if (game->mouse->x <= 247) {
+    game->yellow->column = 2;
+    game->yellow->x = 205;}
+    else if (game->mouse->x <= 330) {
+    game->yellow->column = 3;
+    game->yellow->x = 288;}
+    else if (game->mouse->x <= 413) {
+    game->yellow->column = 4;
+    game->yellow->x = 371;}
+    else if (game->mouse->x <= 496) {
+    game->yellow->column = 5;
+    game->yellow->x = 454;}
+    else if (game->mouse->x <= 579) {
+    game->yellow->column = 6;
+    game->yellow->x = 537;}
+    else if (game->mouse->x >= 579) {
+    game->yellow->column = 7;
+    game->yellow->x = 620;}
+return;
+}
+
