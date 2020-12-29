@@ -63,4 +63,22 @@ int delete_board(Board *board);
 
 int draw_board(Board *board);
 
+
+typedef struct {
+  int x,y;             /**< current sprite position */
+  xpm_image_t img; /**< the sprite pixmap (use read_xpm()) */
+  uint8_t *map;   
+} Background;
+
+/** Creates with random speeds (not zero) and position
+ * (within the screen limits), a new sprite with pixmap "pic", in
+ * memory whose address is "base";
+ * Returns NULL on invalid pixmap.
+ */
+Background *create_background(const char *image[]);
+
+int delete_background(Background *bg);
+
+int draw_background(Background *bg);
+
 #endif

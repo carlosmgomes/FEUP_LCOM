@@ -214,7 +214,6 @@ int (minix_default_cmd_byte)(){
 }
 
 
-struct mouse_ev mouse_event;
 static States state = INIT;
 uint8_t xl, yl;
 

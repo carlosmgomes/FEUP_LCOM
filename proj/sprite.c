@@ -95,4 +95,36 @@ int delete_board(Board *board) {
   return 0;
 }
 
+Background *create_background(const char *image[]) {
+  //allocate space for the "disc"
+  Background *background = (Background *) malloc(sizeof(Background));
+  background->map = xpm_load(image, XPM_8_8_8, &(background->img));
+  background->x = 0;
+  background->y = 0;
+  return background;
+}
 
+int delete_background(Background *bg) {
+  free(bg);
+  return 0;
+}
+
+int draw_background(Background *background) {
+  uint8_t *map = background->map;
+  uint32_t color;
+  unsigned bpp = bits_per_pixel / 8;
+
+  for (int y = 0; y < background->img.height; y++) {
+    for (int x = 0; x < background->img.width; x++) {
+      color = 0;
+      for (unsigned b = 0; b < bpp; b++) {
+        color += *(map + b) << b * 8;
+      }
+      if (color != xpm_transparency_color(XPM_8_8_8)) {
+        pixel_color(background->x + x, background->y + y, color);
+        map += bpp;
+      }
+    }
+  }
+  return 0;
+}

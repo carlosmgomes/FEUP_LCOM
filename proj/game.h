@@ -1,3 +1,5 @@
+#pragma once
+
 #include "graphics_mode.h"
 #include "i8042.h"
 #include "keyboard.h"
@@ -6,6 +8,12 @@
 #include "sprite.h"
 #include "xpm.h"
 #include "mouse.h"
+#include "main_menu.h"
+
+
+typedef enum{
+  MENU_STATE, GAME_STATE
+} Game_State;
 
 typedef struct{
 
@@ -14,7 +22,9 @@ uint8_t kbd_scancode;
 Board *board;
 Disc *yellow;
 Disc *red;
+Background *mainmenu;
 Mouse *mouse;
+Game_State state;
 }Game;
 
 Game* initiate_game();
@@ -35,6 +45,8 @@ bool check_win_vertical(Game* game, int row);
 bool check_win_horizontal(Game* game, int row);
 bool check_win(Game* game, int row);
 bool check_win_diagonal(Game* game);
+void kbd_game_handler(Game* game);
+void mouse_game_handler(Game* game);
 
 
 
