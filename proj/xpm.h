@@ -6,5 +6,7 @@
 #include "/home/lcom/labs/proj/img/main_menu_bg.xpm"
 #include "/home/lcom/labs/proj/img/endgame_yellow.xpm"
 #include "/home/lcom/labs/proj/img/endgame_red.xpm"
+#include "/home/lcom/labs/proj/img/instructions.xpm"
+
 
 

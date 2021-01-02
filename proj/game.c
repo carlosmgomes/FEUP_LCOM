@@ -27,6 +27,7 @@ Game *initiate_game() {
   game->yellow = create_disc(yellow_disc);
   game->red = create_disc(red_disc);
   game->mainmenu = create_background(main_menu_bg);
+  game->instructions = create_background(instructions);
   game->endgame_red = create_background(endgame_red);
   game->endgame_yellow = create_background(endgame_yellow);
   game->board = create_board();
@@ -38,26 +39,15 @@ Game *initiate_game() {
   game->red_win = false;
   init_board(game->board);
   display_game(game);
+  subscribe_interruptions(game);
   return game;
 }
 
 int update_game(Game *game) {
-  uint8_t kbd_bit_num = 0, mouse_bit_num = 0, timer_bit_num = 0;
   int ipc_status;
   message msg;
   int r;
   int pCounter = 0;
-  timer_subscribe_int(&timer_bit_num);
-  uint32_t timer_irq_set = BIT(timer_bit_num);
-
-  kbc_subscribe_int(&kbd_bit_num);
-  uint32_t kbd_irq_set = BIT(kbd_bit_num);
-
-  mouse_subscribe_int(&mouse_bit_num);
-  uint32_t mouse_irq_set = BIT(mouse_bit_num);
-
-  mouse_enable_data();
-
   while (!game->done) {
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
       printf("driver_receive failed with: %d", r);
@@ -65,14 +55,14 @@ int update_game(Game *game) {
     }
     if (is_ipc_notify(ipc_status)) { /* received notification */
       switch (_ENDPOINT_P(msg.m_source)) {
-        case HARDWARE:                                 /* hardware interrupt notification */
-          if (msg.m_notify.interrupts & kbd_irq_set) { /* subscribed interrupt */
+        case HARDWARE:                                       /* hardware interrupt notification */
+          if (msg.m_notify.interrupts & game->kbd_irq_set) { /* subscribed interrupt */
             kbc_ih();
             if (kbd_done) {
               kbd_game_handler(game);
             }
           }
-          if (msg.m_notify.interrupts & mouse_irq_set) {
+          if (msg.m_notify.interrupts & game->mouse_irq_set) {
             mouse_ih();
             game->mouse->pack[pCounter] = packet_byte;
 
@@ -88,7 +78,7 @@ int update_game(Game *game) {
                 pCounter++;
             }
           }
-          if (msg.m_notify.interrupts & timer_irq_set) {
+          if (msg.m_notify.interrupts & game->timer_irq_set) {
             timer_int_handler();
             /*if (counter % (sys_hz() / 10) == 0) {
               double_buffer_update();
@@ -99,12 +89,6 @@ int update_game(Game *game) {
       }
     }
   }
-
-  kbc_unsubscribe_int();
-  mouse_unsubscribe_int();
-  timer_unsubscribe_int();
-  mouse_disable_data_reporting();
-
   return 0;
 }
 
@@ -161,34 +145,43 @@ void display_game(Game *game) {
       }
       break;
     case MENU_STATE:
-      vg_draw_rectangle(0, 0, XRes, YRes, 0);
-      game->mainmenu = create_background(main_menu_bg);
+      game->yellow_turn = false;
+      game->red_turn = true;
+      game->yellow_win = false;
+      game->red_win = false;
+      init_board(game->board);
       draw_background(game->mainmenu);
       break;
     case END_STATE:
       sleep(2);
       vg_draw_rectangle(0, 0, XRes, YRes, 0);
       if (game->yellow_win) {
-        game->mainmenu = create_background(endgame_yellow);
         draw_background(game->endgame_yellow);
       }
       if (game->red_win) {
-        game->mainmenu = create_background(endgame_red);
         draw_background(game->endgame_red);
       }
       sleep(7);
       game->state = MENU_STATE;
-      game->yellow_turn = false;
-      game->red_turn = true;
-      game->yellow_win = false;
-      game->red_win = false;
-      init_board(game->board);
+      break;
+    case INSTRUCTIONS_STATE:
+      draw_background(game->instructions);
+    default:
       break;
   }
 }
 
 void exit_game(Game *game) {
   kbc_unsubscribe_int();
+  mouse_unsubscribe_int();
+  timer_unsubscribe_int();
+  mouse_disable_data_reporting();
+  delete_board(game->board);
+  delete_background(game->endgame_red);
+  delete_background(game->endgame_yellow);
+  delete_background(game->mainmenu);
+  delete_disc(game->red);
+  delete_disc(game->yellow);
   free(game);
 }
 
@@ -603,20 +596,13 @@ void kbd_game_handler(Game *game) {
         display_game(game);
         break;
       }
-    case MENU_STATE:
-      if (game->kbd_scancode != 0) {
-        if (game->kbd_scancode == 0x1C) {
-          game->state = GAME_STATE;
-          vg_draw_rectangle(0, 0, XRes, YRes, 0);
-          draw_board(game->board);
-          init_board(game->board);
-        }
-        if (game->kbd_scancode == KBD_ESC) {
-          game->done = true;
-          printf("ESC detected");
-          break;
-        }
+    case INSTRUCTIONS_STATE:
+      if (game->kbd_scancode == KBD_ESC) {
+        game->state = MENU_STATE;
+        display_game(game);
+        break;
       }
+
     default:
       break;
   }
@@ -637,15 +623,24 @@ void mouse_game_handler(Game *game) {
         break;
       }
     case MENU_STATE:
-      if (play_choose(game->mouse)) {
+    if(game->state!=MENU_STATE){
+      break;
+    }
+      draw_mouse(game->mouse);
+      if (play_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
         game->state = GAME_STATE;
         vg_draw_rectangle(0, 0, XRes, YRes, 0);
         draw_board(game->board);
+        break;
       }
-      else if (exit_choose(game->mouse)) {
-        exit_game(game);
+      else if (exit_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
+        game->done = true;
       }
-
+      else if (inst_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
+        game->state = INSTRUCTIONS_STATE;
+        display_game(game);
+        break;
+      }
     default:
       break;
   }
@@ -694,4 +689,17 @@ void check_win_color(Game *game, int color) {
   else {
     return;
   }
+}
+
+void subscribe_interruptions(Game *game) {
+  uint8_t kbd_bit_num = 0, mouse_bit_num = 0, timer_bit_num = 0;
+  timer_subscribe_int(&timer_bit_num);
+  game->timer_irq_set = BIT(timer_bit_num);
+
+  kbc_subscribe_int(&kbd_bit_num);
+  game->kbd_irq_set = BIT(kbd_bit_num);
+
+  mouse_subscribe_int(&mouse_bit_num);
+  game->mouse_irq_set = BIT(mouse_bit_num);
+  mouse_enable_data();
 }
