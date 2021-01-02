@@ -26,6 +26,8 @@ Game *initiate_game() {
   game->kbd_scancode = 0;
   game->yellow = create_disc(yellow_disc);
   game->red = create_disc(red_disc);
+  game->yellow_board = create_disc(yellow_disc);
+  game->red_board = create_disc(red_disc);
   game->mainmenu = create_background(main_menu_bg);
   game->instructions = create_background(instructions);
   game->endgame_red = create_background(endgame_red);
@@ -80,9 +82,6 @@ int update_game(Game *game) {
           }
           if (msg.m_notify.interrupts & game->timer_irq_set) {
             timer_int_handler();
-            /*if (counter % (sys_hz() / 10) == 0) {
-              double_buffer_update();
-            }*/
           }
         default:
           break;
@@ -145,11 +144,10 @@ void display_game(Game *game) {
       }
       break;
     case MENU_STATE:
-      game->yellow_turn = false;
-      game->red_turn = true;
+      game->yellow_turn = true;
+      game->red_turn = false;
       game->yellow_win = false;
       game->red_win = false;
-      init_board(game->board);
       draw_background(game->mainmenu);
       break;
     case END_STATE:
@@ -163,10 +161,10 @@ void display_game(Game *game) {
       }
       sleep(7);
       game->state = MENU_STATE;
+      init_board(game->board);
       break;
     case INSTRUCTIONS_STATE:
       draw_background(game->instructions);
-    default:
       break;
   }
 }
@@ -596,13 +594,12 @@ void kbd_game_handler(Game *game) {
         display_game(game);
         break;
       }
-    case INSTRUCTIONS_STATE:
+      case INSTRUCTIONS_STATE:
       if (game->kbd_scancode == KBD_ESC) {
-        game->state = MENU_STATE;
-        display_game(game);
-        break;
-      }
-
+          game->state = MENU_STATE;
+          display_game(game);
+          break;
+        }
     default:
       break;
   }
@@ -623,15 +620,14 @@ void mouse_game_handler(Game *game) {
         break;
       }
     case MENU_STATE:
-    if(game->state!=MENU_STATE){
-      break;
-    }
+      if (game->state != MENU_STATE) {
+        break;
+      }
       draw_mouse(game->mouse);
       if (play_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
         game->state = GAME_STATE;
         vg_draw_rectangle(0, 0, XRes, YRes, 0);
         draw_board(game->board);
-        break;
       }
       else if (exit_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
         game->done = true;
@@ -639,8 +635,8 @@ void mouse_game_handler(Game *game) {
       else if (inst_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
         game->state = INSTRUCTIONS_STATE;
         display_game(game);
-        break;
       }
+      break;
     default:
       break;
   }

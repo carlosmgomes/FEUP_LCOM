@@ -22,6 +22,8 @@ uint8_t kbd_scancode;
 Board *board;
 Disc *yellow;
 Disc *red;
+Disc *yellow_board;
+Disc *red_board;
 Background *mainmenu;
 Background *instructions;
 Background *endgame_yellow;
