@@ -74,5 +74,4 @@ int(proj_main_loop)(int argc, char *argv[]) {
   vg_exit();
   return 0;
 
-  return 0;
 }

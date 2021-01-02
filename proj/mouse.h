@@ -12,7 +12,7 @@ typedef struct {
     int w, h;
     int lb;
     uint8_t pack[3];
-    //struct packet *pp;
+    struct packet *pp;
 } Mouse;
 
 

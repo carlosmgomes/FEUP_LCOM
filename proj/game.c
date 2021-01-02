@@ -27,15 +27,17 @@ Game *initiate_game() {
   game->yellow = create_disc(yellow_disc);
   game->red = create_disc(red_disc);
   game->mainmenu = create_background(main_menu_bg);
+  game->endgame_red = create_background(endgame_red);
+  game->endgame_yellow = create_background(endgame_yellow);
   game->board = create_board();
   game->yellow_turn = true;
   game->red_turn = false;
   game->mouse = new_mouse();
   game->state = MENU_STATE;
+  game->yellow_win = false;
+  game->red_win = false;
   init_board(game->board);
-  //draw_board(game->board);
-  draw_background(game->mainmenu);
-
+  display_game(game);
   return game;
 }
 
@@ -134,25 +136,55 @@ void check_turn_left(Game *game) {
 }
 
 void change_turn(Game *game) {
-  if (game->yellow_turn) {
-    place_disc_array(game);
-    display_game(game);
-    draw_disc(game->yellow);
-  }
-  else {
-    place_disc_array(game);
-    display_game(game);
-    draw_disc(game->red);
-  }
+  place_disc_array(game);
+  display_game(game);
   //piece_animation(game);
   game->red_turn = !game->red_turn;
   game->yellow_turn = !game->yellow_turn;
 }
 
 void display_game(Game *game) {
-  check_turn_draw(game);
-  draw_mouse(game->mouse);
-  fill_board(game);
+  switch (game->state) {
+    case GAME_STATE:
+      check_turn_draw(game);
+      draw_mouse(game->mouse);
+      fill_board(game);
+      if (game->yellow_turn) {
+        draw_disc(game->yellow);
+      }
+      else {
+        draw_disc(game->red);
+      }
+      if (game->yellow_win || game->red_win) {
+        game->state = END_STATE;
+        display_game(game);
+      }
+      break;
+    case MENU_STATE:
+      vg_draw_rectangle(0, 0, XRes, YRes, 0);
+      game->mainmenu = create_background(main_menu_bg);
+      draw_background(game->mainmenu);
+      break;
+    case END_STATE:
+      sleep(2);
+      vg_draw_rectangle(0, 0, XRes, YRes, 0);
+      if (game->yellow_win) {
+        game->mainmenu = create_background(endgame_yellow);
+        draw_background(game->endgame_yellow);
+      }
+      if (game->red_win) {
+        game->mainmenu = create_background(endgame_red);
+        draw_background(game->endgame_red);
+      }
+      sleep(7);
+      game->state = MENU_STATE;
+      game->yellow_turn = false;
+      game->red_turn = true;
+      game->yellow_win = false;
+      game->red_win = false;
+      init_board(game->board);
+      break;
+  }
 }
 
 void exit_game(Game *game) {
@@ -300,8 +332,7 @@ void place_disc_array(Game *game) {
       }
     }
   }
-  if (check_win(game, row))
-    vg_draw_rectangle(0, 0, XRes, 500, 100);
+  check_win(game, row);
 }
 
 bool check_turn(Game *game) {
@@ -340,32 +371,46 @@ bool check_win_vertical(Game *game, int row) {
   }
 
   if (column == 1 && row > 2) {
-    if (game->board->Column1[row] == color && game->board->Column1[row - 1] == color && game->board->Column1[row - 2] == color && game->board->Column1[row - 3] == color)
+    if (game->board->Column1[row] == color && game->board->Column1[row - 1] == color && game->board->Column1[row - 2] == color && game->board->Column1[row - 3] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   if (column == 2 && row > 2) {
-    if (game->board->Column2[row] == color && game->board->Column2[row - 1] == color && game->board->Column2[row - 2] == color && game->board->Column2[row - 3] == color)
+    if (game->board->Column2[row] == color && game->board->Column2[row - 1] == color && game->board->Column2[row - 2] == color && game->board->Column2[row - 3] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   if (column == 3 && row > 2) {
-    if (game->board->Column3[row] == color && game->board->Column3[row - 1] == color && game->board->Column3[row - 2] == color && game->board->Column3[row - 3] == color)
+    if (game->board->Column3[row] == color && game->board->Column3[row - 1] == color && game->board->Column3[row - 2] == color && game->board->Column3[row - 3] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   if (column == 4 && row > 2) {
-    if (game->board->Column4[row] == color && game->board->Column4[row - 1] == color && game->board->Column4[row - 2] == color && game->board->Column4[row - 3] == color)
+    if (game->board->Column4[row] == color && game->board->Column4[row - 1] == color && game->board->Column4[row - 2] == color && game->board->Column4[row - 3] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   if (column == 5 && row > 2) {
-    if (game->board->Column5[row] == color && game->board->Column5[row - 1] == color && game->board->Column5[row - 2] == color && game->board->Column5[row - 3] == color)
+    if (game->board->Column5[row] == color && game->board->Column5[row - 1] == color && game->board->Column5[row - 2] == color && game->board->Column5[row - 3] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   if (column == 6 && row > 2) {
-    if (game->board->Column6[row] == color && game->board->Column6[row - 1] == color && game->board->Column6[row - 2] == color && game->board->Column6[row - 3] == color)
+    if (game->board->Column6[row] == color && game->board->Column6[row - 1] == color && game->board->Column6[row - 2] == color && game->board->Column6[row - 3] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   if (column == 7 && row > 2) {
-    if (game->board->Column7[row] == color && game->board->Column7[row - 1] == color && game->board->Column7[row - 2] == color && game->board->Column7[row - 3] == color)
+    if (game->board->Column7[row] == color && game->board->Column7[row - 1] == color && game->board->Column7[row - 2] == color && game->board->Column7[row - 3] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   return false;
 }
@@ -382,20 +427,28 @@ bool check_win_horizontal(Game *game, int row) {
     column = game->red->column;
   }
   if (column == 1 || column == 2 || column == 3 || column == 4) {
-    if (game->board->Column1[row] == color && game->board->Column2[row] == color && game->board->Column3[row] == color && game->board->Column4[row] == color)
+    if (game->board->Column1[row] == color && game->board->Column2[row] == color && game->board->Column3[row] == color && game->board->Column4[row] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   if (column == 2 || column == 3 || column == 4 || column == 5) {
-    if (game->board->Column2[row] == color && game->board->Column3[row] == color && game->board->Column4[row] == color && game->board->Column5[row] == color)
+    if (game->board->Column2[row] == color && game->board->Column3[row] == color && game->board->Column4[row] == color && game->board->Column5[row] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   if (column == 3 || column == 4 || column == 5 || column == 6) {
-    if (game->board->Column3[row] == color && game->board->Column4[row] == color && game->board->Column5[row] == color && game->board->Column6[row] == color)
+    if (game->board->Column3[row] == color && game->board->Column4[row] == color && game->board->Column5[row] == color && game->board->Column6[row] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   if (column == 4 || column == 5 || column == 6 || column == 7) {
-    if (game->board->Column4[row] == color && game->board->Column5[row] == color && game->board->Column6[row] == color && game->board->Column7[row] == color)
+    if (game->board->Column4[row] == color && game->board->Column5[row] == color && game->board->Column6[row] == color && game->board->Column7[row] == color) {
+      check_win_color(game, color);
       return true;
+    }
   }
   return false;
 }
@@ -417,56 +470,106 @@ bool check_win_diagonal(Game *game) {
   else
     color = 2;
 
-  if (game->board->Column1[0] == color && game->board->Column2[1] == color && game->board->Column3[2] == color && game->board->Column4[3] == color)
+  if (game->board->Column1[0] == color && game->board->Column2[1] == color && game->board->Column3[2] == color && game->board->Column4[3] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column2[0] == color && game->board->Column3[1] == color && game->board->Column4[2] == color && game->board->Column5[3] == color)
+  }
+  else if (game->board->Column2[0] == color && game->board->Column3[1] == color && game->board->Column4[2] == color && game->board->Column5[3] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column3[0] == color && game->board->Column4[1] == color && game->board->Column5[2] == color && game->board->Column6[3] == color)
+  }
+  else if (game->board->Column3[0] == color && game->board->Column4[1] == color && game->board->Column5[2] == color && game->board->Column6[3] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column4[0] == color && game->board->Column5[1] == color && game->board->Column6[2] == color && game->board->Column7[3] == color)
+  }
+  else if (game->board->Column4[0] == color && game->board->Column5[1] == color && game->board->Column6[2] == color && game->board->Column7[3] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column1[1] == color && game->board->Column2[2] == color && game->board->Column3[3] == color && game->board->Column4[4] == color)
+  }
+  else if (game->board->Column1[1] == color && game->board->Column2[2] == color && game->board->Column3[3] == color && game->board->Column4[4] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column2[1] == color && game->board->Column3[2] == color && game->board->Column4[3] == color && game->board->Column5[4] == color)
+  }
+  else if (game->board->Column2[1] == color && game->board->Column3[2] == color && game->board->Column4[3] == color && game->board->Column5[4] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column3[1] == color && game->board->Column4[2] == color && game->board->Column5[3] == color && game->board->Column6[4] == color)
+  }
+  else if (game->board->Column3[1] == color && game->board->Column4[2] == color && game->board->Column5[3] == color && game->board->Column6[4] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column4[1] == color && game->board->Column5[2] == color && game->board->Column6[3] == color && game->board->Column7[4] == color)
+  }
+  else if (game->board->Column4[1] == color && game->board->Column5[2] == color && game->board->Column6[3] == color && game->board->Column7[4] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column1[2] == color && game->board->Column2[3] == color && game->board->Column3[4] == color && game->board->Column4[5] == color)
+  }
+  else if (game->board->Column1[2] == color && game->board->Column2[3] == color && game->board->Column3[4] == color && game->board->Column4[5] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column2[2] == color && game->board->Column3[3] == color && game->board->Column4[4] == color && game->board->Column5[5] == color)
+  }
+  else if (game->board->Column2[2] == color && game->board->Column3[3] == color && game->board->Column4[4] == color && game->board->Column5[5] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column3[2] == color && game->board->Column4[3] == color && game->board->Column5[4] == color && game->board->Column6[5] == color)
+  }
+  else if (game->board->Column3[2] == color && game->board->Column4[3] == color && game->board->Column5[4] == color && game->board->Column6[5] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column4[2] == color && game->board->Column5[3] == color && game->board->Column6[4] == color && game->board->Column7[5] == color)
+  }
+  else if (game->board->Column4[2] == color && game->board->Column5[3] == color && game->board->Column6[4] == color && game->board->Column7[5] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column1[2] == color && game->board->Column2[3] == color && game->board->Column3[4] == color && game->board->Column4[5] == color)
+  }
+  else if (game->board->Column1[2] == color && game->board->Column2[3] == color && game->board->Column3[4] == color && game->board->Column4[5] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column1[5] == color && game->board->Column2[4] == color && game->board->Column3[3] == color && game->board->Column4[2] == color)
+  }
+  else if (game->board->Column1[5] == color && game->board->Column2[4] == color && game->board->Column3[3] == color && game->board->Column4[2] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column2[5] == color && game->board->Column3[4] == color && game->board->Column4[3] == color && game->board->Column5[2] == color)
+  }
+  else if (game->board->Column2[5] == color && game->board->Column3[4] == color && game->board->Column4[3] == color && game->board->Column5[2] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column3[5] == color && game->board->Column4[4] == color && game->board->Column5[3] == color && game->board->Column6[2] == color)
+  }
+  else if (game->board->Column3[5] == color && game->board->Column4[4] == color && game->board->Column5[3] == color && game->board->Column6[2] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column4[5] == color && game->board->Column5[4] == color && game->board->Column6[3] == color && game->board->Column7[2] == color)
+  }
+  else if (game->board->Column4[5] == color && game->board->Column5[4] == color && game->board->Column6[3] == color && game->board->Column7[2] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column1[4] == color && game->board->Column2[3] == color && game->board->Column3[2] == color && game->board->Column4[1] == color)
+  }
+  else if (game->board->Column1[4] == color && game->board->Column2[3] == color && game->board->Column3[2] == color && game->board->Column4[1] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column2[4] == color && game->board->Column3[3] == color && game->board->Column4[2] == color && game->board->Column5[1] == color)
+  }
+  else if (game->board->Column2[4] == color && game->board->Column3[3] == color && game->board->Column4[2] == color && game->board->Column5[1] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column3[4] == color && game->board->Column4[3] == color && game->board->Column5[2] == color && game->board->Column6[1] == color)
+  }
+  else if (game->board->Column3[4] == color && game->board->Column4[3] == color && game->board->Column5[2] == color && game->board->Column6[1] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column4[4] == color && game->board->Column5[3] == color && game->board->Column6[2] == color && game->board->Column7[1] == color)
+  }
+  else if (game->board->Column4[4] == color && game->board->Column5[3] == color && game->board->Column6[2] == color && game->board->Column7[1] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column1[3] == color && game->board->Column2[2] == color && game->board->Column3[1] == color && game->board->Column4[0] == color)
+  }
+  else if (game->board->Column1[3] == color && game->board->Column2[2] == color && game->board->Column3[1] == color && game->board->Column4[0] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column2[3] == color && game->board->Column3[2] == color && game->board->Column4[1] == color && game->board->Column5[0] == color)
+  }
+  else if (game->board->Column2[3] == color && game->board->Column3[2] == color && game->board->Column4[1] == color && game->board->Column5[0] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column3[3] == color && game->board->Column4[2] == color && game->board->Column5[1] == color && game->board->Column6[0] == color)
+  }
+  else if (game->board->Column3[3] == color && game->board->Column4[2] == color && game->board->Column5[1] == color && game->board->Column6[0] == color) {
+    check_win_color(game, color);
     return true;
-  else if (game->board->Column4[3] == color && game->board->Column5[2] == color && game->board->Column6[1] == color && game->board->Column7[0] == color)
+  }
+  else if (game->board->Column4[3] == color && game->board->Column5[2] == color && game->board->Column6[1] == color && game->board->Column7[0] == color) {
+    check_win_color(game, color);
     return true;
+  }
   return false;
 }
 
@@ -475,33 +578,26 @@ void kbd_game_handler(Game *game) {
   switch (game->state) {
     case GAME_STATE:
       if (game->kbd_scancode != 0) {
-        if(game->red_turn){
+        if (game->red_turn) {
           if (game->kbd_scancode == 0x1C) { // enter pressed
-          if (check_turn(game))
-            change_turn(game);
-          vg_draw_rectangle(0, 0, XRes, 80, 0);
-
-          //draw_board(game->board);
-        }
-        if (game->kbd_scancode == 0x4B) { // left
-          vg_draw_rectangle(0, 0, XRes, 80, 0);
-          //draw_board(game->board);
-
-          check_turn_left(game);
-          break;
-        }
-        if (game->kbd_scancode == 0x4D) { // right
-          vg_draw_rectangle(0, 0, XRes, 80, 0);
-          //draw_board(game->board);
-          check_turn_right(game);
-          break;
-        }
+            if (check_turn(game))
+              change_turn(game);
+            vg_draw_rectangle(0, 0, XRes, 80, 0);
+          }
+          if (game->kbd_scancode == 0x4B) { // left
+            vg_draw_rectangle(0, 0, XRes, 80, 0);
+            check_turn_left(game);
+            break;
+          }
+          if (game->kbd_scancode == 0x4D) { // right
+            vg_draw_rectangle(0, 0, XRes, 80, 0);
+            check_turn_right(game);
+            break;
+          }
         }
         if (game->kbd_scancode == KBD_ESC) {
           game->state = MENU_STATE;
-          vg_draw_rectangle(0, 0, XRes, YRes, 0);
-          game->mainmenu = create_background(main_menu_bg);
-          draw_background(game->mainmenu);
+          display_game(game);
           break;
         }
         display_game(game);
@@ -510,11 +606,10 @@ void kbd_game_handler(Game *game) {
     case MENU_STATE:
       if (game->kbd_scancode != 0) {
         if (game->kbd_scancode == 0x1C) {
-          delete_background(game->mainmenu);
+          game->state = GAME_STATE;
           vg_draw_rectangle(0, 0, XRes, YRes, 0);
           draw_board(game->board);
           init_board(game->board);
-          game->state = GAME_STATE;
         }
         if (game->kbd_scancode == KBD_ESC) {
           game->done = true;
@@ -527,59 +622,76 @@ void kbd_game_handler(Game *game) {
   }
 }
 
-  void mouse_game_handler(Game * game) {
-    switch (game->state) {
-      case GAME_STATE:
-        if(game->yellow_turn) {
-          if (game->mouse->pack[0] & BIT(0)) {
-			    if (check_turn(game))
+void mouse_game_handler(Game *game) {
+  switch (game->state) {
+    case GAME_STATE:
+      if (game->yellow_turn) {
+        if (game->mouse->pack[0] & BIT(0)) {
+          if (check_turn(game))
             change_turn(game);
           vg_draw_rectangle(0, 0, XRes, 80, 0);
-          }
+        }
         mouse_follow_disc(game);
         vg_draw_rectangle(0, 0, XRes, 80, 0);
         display_game(game);
         break;
-        }
-      case MENU_STATE:
-        if (play_choose(game->mouse)) {
-          game->state = GAME_STATE;
-          vg_draw_rectangle(0, 0, XRes, YRes, 0);
-          draw_board(game->board);
-        }
-        else if (exit_choose(game->mouse)) {
-          exit_game(game);
-        }
+      }
+    case MENU_STATE:
+      if (play_choose(game->mouse)) {
+        game->state = GAME_STATE;
+        vg_draw_rectangle(0, 0, XRes, YRes, 0);
+        draw_board(game->board);
+      }
+      else if (exit_choose(game->mouse)) {
+        exit_game(game);
+      }
 
-      default:
-        break;
-    }
+    default:
+      break;
   }
-
-
-// 122, 205, 288, 371, 454, 537, 620
-void mouse_follow_disc(Game * game){
-    if (game->mouse->x <= 163) {
-    game->yellow->column = 1;
-    game->yellow->x = 122;}
-    else if (game->mouse->x <= 247) {
-    game->yellow->column = 2;
-    game->yellow->x = 205;}
-    else if (game->mouse->x <= 330) {
-    game->yellow->column = 3;
-    game->yellow->x = 288;}
-    else if (game->mouse->x <= 413) {
-    game->yellow->column = 4;
-    game->yellow->x = 371;}
-    else if (game->mouse->x <= 496) {
-    game->yellow->column = 5;
-    game->yellow->x = 454;}
-    else if (game->mouse->x <= 579) {
-    game->yellow->column = 6;
-    game->yellow->x = 537;}
-    else if (game->mouse->x >= 579) {
-    game->yellow->column = 7;
-    game->yellow->x = 620;}
-return;
 }
 
+// 122, 205, 288, 371, 454, 537, 620
+void mouse_follow_disc(Game *game) {
+  if (game->mouse->x <= 163) {
+    game->yellow->column = 1;
+    game->yellow->x = 122;
+  }
+  else if (game->mouse->x <= 247) {
+    game->yellow->column = 2;
+    game->yellow->x = 205;
+  }
+  else if (game->mouse->x <= 330) {
+    game->yellow->column = 3;
+    game->yellow->x = 288;
+  }
+  else if (game->mouse->x <= 413) {
+    game->yellow->column = 4;
+    game->yellow->x = 371;
+  }
+  else if (game->mouse->x <= 496) {
+    game->yellow->column = 5;
+    game->yellow->x = 454;
+  }
+  else if (game->mouse->x <= 579) {
+    game->yellow->column = 6;
+    game->yellow->x = 537;
+  }
+  else if (game->mouse->x >= 579) {
+    game->yellow->column = 7;
+    game->yellow->x = 620;
+  }
+  return;
+}
+
+void check_win_color(Game *game, int color) {
+  if (color == 1) {
+    game->yellow_win = true;
+  }
+  else if (color == 2) {
+    game->red_win = true;
+  }
+  else {
+    return;
+  }
+}

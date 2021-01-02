@@ -12,7 +12,7 @@
 
 
 typedef enum{
-  MENU_STATE, GAME_STATE
+  MENU_STATE, GAME_STATE, END_STATE
 } Game_State;
 
 typedef struct{
@@ -23,8 +23,12 @@ Board *board;
 Disc *yellow;
 Disc *red;
 Background *mainmenu;
+Background *endgame_yellow;
+Background *endgame_red;
 Mouse *mouse;
 Game_State state;
+bool yellow_win;
+bool red_win;
 }Game;
 
 Game* initiate_game();
@@ -48,6 +52,7 @@ bool check_win_diagonal(Game* game);
 void kbd_game_handler(Game* game);
 void mouse_game_handler(Game* game);
 void mouse_follow_disc(Game * game);
+void check_win_color(Game *game,int color);
 
 
 
