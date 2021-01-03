@@ -9,6 +9,7 @@
 #include "/home/lcom/labs/proj/img/endgame_yellow.xpm"
 #include "/home/lcom/labs/proj/img/endgame_red.xpm"
 #include "/home/lcom/labs/proj/img/instructions.xpm"
+#include "/home/lcom/labs/proj/img/tie.xpm"
 
 
 

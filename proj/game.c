@@ -32,6 +32,7 @@ Game *initiate_game() {
   game->instructions = create_background(instructions);
   game->endgame_red = create_background(endgame_red);
   game->endgame_yellow = create_background(endgame_yellow);
+  game->endgame_tie = create_background(tie);
   game->board = create_board();
   game->yellow_turn = true;
   game->red_turn = false;
@@ -39,6 +40,7 @@ Game *initiate_game() {
   game->state = MENU_STATE;
   game->yellow_win = false;
   game->red_win = false;
+  game->tie = false;
   init_board(game->board);
   display_game(game);
   subscribe_interruptions(game);
@@ -138,7 +140,7 @@ void display_game(Game *game) {
       else {
         draw_disc(game->red);
       }
-      if (game->yellow_win || game->red_win) {
+      if (game->yellow_win || game->red_win || game->tie) {
         game->state = END_STATE;
         display_game(game);
       }
@@ -148,6 +150,7 @@ void display_game(Game *game) {
       game->red_turn = false;
       game->yellow_win = false;
       game->red_win = false;
+      game->tie = false;
       draw_background(game->mainmenu);
       break;
     case END_STATE:
@@ -158,6 +161,9 @@ void display_game(Game *game) {
       }
       if (game->red_win) {
         draw_background(game->endgame_red);
+      }
+      if (game->tie) {
+        draw_background(game->endgame_tie);
       }
       sleep(7);
       game->state = MENU_STATE;
@@ -324,6 +330,7 @@ void place_disc_array(Game *game) {
     }
   }
   check_win(game, row);
+  verify_full_board(game);
 }
 
 bool check_turn(Game *game) {
@@ -594,12 +601,12 @@ void kbd_game_handler(Game *game) {
         display_game(game);
         break;
       }
-      case INSTRUCTIONS_STATE:
+    case INSTRUCTIONS_STATE:
       if (game->kbd_scancode == KBD_ESC) {
-          game->state = MENU_STATE;
-          display_game(game);
-          break;
-        }
+        game->state = MENU_STATE;
+        display_game(game);
+        break;
+      }
     default:
       break;
   }
@@ -698,4 +705,29 @@ void subscribe_interruptions(Game *game) {
   mouse_subscribe_int(&mouse_bit_num);
   game->mouse_irq_set = BIT(mouse_bit_num);
   mouse_enable_data();
+}
+
+void verify_full_board(Game *game) {
+  if (game->board->Column1[5] == 0) {
+    return;
+  }
+  if (game->board->Column2[5] == 0) {
+    return;
+  }
+  if (game->board->Column3[5] == 0) {
+    return;
+  }
+  if (game->board->Column4[5] == 0) {
+    return;
+  }
+  if (game->board->Column5[5] == 0) {
+    return;
+  }
+  if (game->board->Column6[5] == 0) {
+    return;
+  }
+  if (game->board->Column7[5] == 0) {
+    return;
+  }
+  game->tie=true;
 }
