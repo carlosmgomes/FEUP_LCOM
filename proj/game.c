@@ -26,8 +26,8 @@ Game *initiate_game() {
   game->kbd_scancode = 0;
   game->yellow = create_disc(yellow_disc);
   game->red = create_disc(red_disc);
-  game->yellow_board = create_disc(yellow_disc);
-  game->red_board = create_disc(red_disc);
+  game->yellow_board = create_disc(yellow_board);
+  game->red_board = create_disc(red_board);
   game->mainmenu = create_background(main_menu_bg);
   game->instructions = create_background(instructions);
   game->endgame_red = create_background(endgame_red);
@@ -146,6 +146,7 @@ void display_game(Game *game) {
       }
       break;
     case MENU_STATE:
+      init_board(game->board);
       game->yellow_turn = true;
       game->red_turn = false;
       game->yellow_win = false;
@@ -167,7 +168,6 @@ void display_game(Game *game) {
       }
       sleep(7);
       game->state = MENU_STATE;
-      init_board(game->board);
       break;
     case INSTRUCTIONS_STATE:
       draw_background(game->instructions);
@@ -203,33 +203,33 @@ void init_board(Board *board) {
 void fill_board(Game *game) {
   for (int i = 0; i < 6; i++) {
     if (game->board->Column1[i] == 1)
-      draw_disc_on_coords(game->yellow, 122, (512 - 83 * i));
+      draw_disc_on_coords(game->yellow_board, 122, (512 - 83 * i));
     else if (game->board->Column1[i] == 2)
-      draw_disc_on_coords(game->red, 122, (512 - 83 * i));
+      draw_disc_on_coords(game->red_board, 122, (512 - 83 * i));
     if (game->board->Column2[i] == 1)
-      draw_disc_on_coords(game->yellow, 205, (512 - 83 * i));
+      draw_disc_on_coords(game->yellow_board, 205, (512 - 83 * i));
     else if (game->board->Column2[i] == 2)
-      draw_disc_on_coords(game->red, 205, (512 - 83 * i));
+      draw_disc_on_coords(game->red_board, 205, (512 - 83 * i));
     if (game->board->Column3[i] == 1)
-      draw_disc_on_coords(game->yellow, 288, (512 - 83 * i));
+      draw_disc_on_coords(game->yellow_board, 288, (512 - 83 * i));
     else if (game->board->Column3[i] == 2)
-      draw_disc_on_coords(game->red, 288, (512 - 83 * i));
+      draw_disc_on_coords(game->red_board, 288, (512 - 83 * i));
     if (game->board->Column4[i] == 1)
-      draw_disc_on_coords(game->yellow, 371, (512 - 83 * i));
+      draw_disc_on_coords(game->yellow_board, 371, (512 - 83 * i));
     else if (game->board->Column4[i] == 2)
-      draw_disc_on_coords(game->red, 371, (512 - 83 * i));
+      draw_disc_on_coords(game->red_board, 371, (512 - 83 * i));
     if (game->board->Column5[i] == 1)
-      draw_disc_on_coords(game->yellow, 454, (512 - 83 * i));
+      draw_disc_on_coords(game->yellow_board, 454, (512 - 83 * i));
     else if (game->board->Column5[i] == 2)
-      draw_disc_on_coords(game->red, 454, (512 - 83 * i));
+      draw_disc_on_coords(game->red_board, 454, (512 - 83 * i));
     if (game->board->Column6[i] == 1)
-      draw_disc_on_coords(game->yellow, 537, (512 - 83 * i));
+      draw_disc_on_coords(game->yellow_board, 537, (512 - 83 * i));
     else if (game->board->Column6[i] == 2)
-      draw_disc_on_coords(game->red, 537, (512 - 83 * i));
+      draw_disc_on_coords(game->red_board, 537, (512 - 83 * i));
     if (game->board->Column7[i] == 1)
-      draw_disc_on_coords(game->yellow, 620, (512 - 83 * i));
+      draw_disc_on_coords(game->yellow_board, 620, (512 - 83 * i));
     else if (game->board->Column7[i] == 2)
-      draw_disc_on_coords(game->red, 620, (512 - 83 * i));
+      draw_disc_on_coords(game->red_board, 620, (512 - 83 * i));
   }
 }
 
@@ -729,5 +729,5 @@ void verify_full_board(Game *game) {
   if (game->board->Column7[5] == 0) {
     return;
   }
-  game->tie=true;
+  game->tie = true;
 }

@@ -17,7 +17,7 @@ typedef enum{
 
 typedef struct{
 
-bool done,display,red_turn,yellow_turn;
+bool done,display,red_turn,yellow_turn,yellow_win, red_win, tie;
 uint8_t kbd_scancode;
 Board *board;
 Disc *yellow;
@@ -31,7 +31,6 @@ Background *endgame_red;
 Background *endgame_tie;
 Mouse *mouse;
 Game_State state;
-bool yellow_win, red_win, tie;
 uint32_t timer_irq_set, kbd_irq_set,mouse_irq_set;
 }Game;
 
@@ -59,6 +58,5 @@ void mouse_game_handler(Game* game);
 void mouse_follow_disc(Game * game);
 void check_win_color(Game *game,int color);
 void verify_full_board(Game *game);
-
 
 
