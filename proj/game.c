@@ -41,7 +41,6 @@ Game *initiate_game() {
   game->yellow_win = false;
   game->red_win = false;
   game->tie = false;
-  init_board(game->board);
   display_game(game);
   subscribe_interruptions(game);
   return game;
@@ -129,8 +128,10 @@ void change_turn(Game *game) {
 }
 
 void display_game(Game *game) {
+  clean_double_buffer();
   switch (game->state) {
     case GAME_STATE:
+      draw_board(game->board);
       check_turn_draw(game);
       draw_mouse(game->mouse);
       fill_board(game);
@@ -140,23 +141,23 @@ void display_game(Game *game) {
       else {
         draw_disc(game->red);
       }
+      double_buffer_update();
       if (game->yellow_win || game->red_win || game->tie) {
         game->state = END_STATE;
-        display_game(game);
       }
       break;
     case MENU_STATE:
+      draw_background(game->mainmenu);
       init_board(game->board);
       game->yellow_turn = true;
       game->red_turn = false;
       game->yellow_win = false;
       game->red_win = false;
       game->tie = false;
-      draw_background(game->mainmenu);
+      double_buffer_update();
       break;
     case END_STATE:
       sleep(2);
-      vg_draw_rectangle(0, 0, XRes, YRes, 0);
       if (game->yellow_win) {
         draw_background(game->endgame_yellow);
       }
@@ -166,11 +167,12 @@ void display_game(Game *game) {
       if (game->tie) {
         draw_background(game->endgame_tie);
       }
-      sleep(7);
-      game->state = MENU_STATE;
+      double_buffer_update();
       break;
+
     case INSTRUCTIONS_STATE:
       draw_background(game->instructions);
+      double_buffer_update();
       break;
   }
 }
@@ -580,15 +582,12 @@ void kbd_game_handler(Game *game) {
           if (game->kbd_scancode == 0x1C) { // enter pressed
             if (check_turn(game))
               change_turn(game);
-            vg_draw_rectangle(0, 0, XRes, 80, 0);
           }
           if (game->kbd_scancode == 0x4B) { // left
-            vg_draw_rectangle(0, 0, XRes, 80, 0);
             check_turn_left(game);
             break;
           }
           if (game->kbd_scancode == 0x4D) { // right
-            vg_draw_rectangle(0, 0, XRes, 80, 0);
             check_turn_right(game);
             break;
           }
@@ -607,6 +606,12 @@ void kbd_game_handler(Game *game) {
         display_game(game);
         break;
       }
+    case END_STATE:
+      if (game->kbd_scancode == KBD_ESC) {
+        game->state = MENU_STATE;
+        display_game(game);
+        break;
+      }
     default:
       break;
   }
@@ -619,10 +624,8 @@ void mouse_game_handler(Game *game) {
         if (game->mouse->pack[0] & BIT(0)) {
           if (check_turn(game))
             change_turn(game);
-          vg_draw_rectangle(0, 0, XRes, 80, 0);
         }
         mouse_follow_disc(game);
-        vg_draw_rectangle(0, 0, XRes, 80, 0);
         display_game(game);
         break;
       }
@@ -630,11 +633,11 @@ void mouse_game_handler(Game *game) {
       if (game->state != MENU_STATE) {
         break;
       }
+      clean_double_buffer();
       draw_mouse(game->mouse);
+      double_buffer_update();
       if (play_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
         game->state = GAME_STATE;
-        vg_draw_rectangle(0, 0, XRes, YRes, 0);
-        draw_board(game->board);
       }
       else if (exit_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
         game->done = true;
@@ -643,6 +646,7 @@ void mouse_game_handler(Game *game) {
         game->state = INSTRUCTIONS_STATE;
         display_game(game);
       }
+      display_game(game);
       break;
     default:
       break;

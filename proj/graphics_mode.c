@@ -16,9 +16,9 @@ int(vbe_mode_info)(uint16_t mode, vbe_mode_info_t *vmi_p) {
     lm_free(&mm);
     return 1;
   }
-*vmi_p=*(vbe_mode_info_t*)mm.virt;
-lm_free(&mm);
-return 0;
+  *vmi_p = *(vbe_mode_info_t *) mm.virt;
+  lm_free(&mm);
+  return 0;
 }
 
 void *(vg_init)(uint16_t mode) {
@@ -45,7 +45,7 @@ void *(vg_init)(uint16_t mode) {
     panic("sys_privctl (ADD_MEM) failed: %d\n", r); /*Map memory*/
   }
   video_mem = vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
-  double_buffer=(char*) malloc(vram_size);
+  double_buffer = (char *) malloc(vram_size);
   if (video_mem == MAP_FAILED) {
     panic("couldn’t map video memory");
   }
@@ -67,7 +67,7 @@ int vbe_int_10(uint16_t mode) {
 
 int(pixel_color)(uint16_t x, uint16_t y, uint32_t color) {
   unsigned bytes_per_pixel = ceil(bits_per_pixel / 8);
-  char *ptr = video_mem;
+  char *ptr = double_buffer;
 
   ptr += (x + XRes * y) * (bytes_per_pixel);
 
@@ -139,8 +139,11 @@ int vg_draw_pattern(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_
   return 0;
 }
 
-
-void double_buffer_update(){
+void double_buffer_update() {
   unsigned bytes_per_pixel = ceil(bits_per_pixel / 8);
-  memcpy(video_mem,double_buffer,(XRes * YRes) * bytes_per_pixel);
+  memcpy(video_mem, double_buffer, (XRes * YRes) * bytes_per_pixel);
+}
+
+void clean_double_buffer() {
+  vg_draw_rectangle(0, 0, XRes, YRes, 0);
 }
