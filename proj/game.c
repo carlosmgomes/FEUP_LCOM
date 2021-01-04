@@ -83,8 +83,13 @@ int update_game(Game *game) {
           }
           if (msg.m_notify.interrupts & game->timer_irq_set) {
             timer_int_handler();
-            if (counter % (sys_hz() / 30) == 0)
+            if (counter % (sys_hz()/30) == 0) {
               double_buffer_update();
+              if (game->yellow_win || game->red_win || game->tie) {
+                game->state = END_STATE;
+                display_game(game);
+              }
+            }
           }
         default:
           break;
@@ -137,10 +142,6 @@ void display_game(Game *game) {
       check_turn_draw(game);
       draw_mouse(game->mouse);
       fill_board(game);
-      if (game->yellow_win || game->red_win || game->tie) {
-        fill_board(game);
-        game->state = END_STATE;
-      }
       if (game->yellow_turn) {
         draw_disc(game->yellow);
       }
