@@ -148,13 +148,14 @@ void display_game(Game *game) {
       break;
     case MENU_STATE:
       draw_background(game->mainmenu);
+      draw_mouse(game->mouse);
+      double_buffer_update();
       init_board(game->board);
       game->yellow_turn = true;
       game->red_turn = false;
       game->yellow_win = false;
       game->red_win = false;
       game->tie = false;
-      double_buffer_update();
       break;
     case END_STATE:
       sleep(2);
@@ -633,11 +634,9 @@ void mouse_game_handler(Game *game) {
       if (game->state != MENU_STATE) {
         break;
       }
-      clean_double_buffer();
-      draw_mouse(game->mouse);
-      double_buffer_update();
       if (play_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
         game->state = GAME_STATE;
+        display_game(game);
       }
       else if (exit_choose(game->mouse) && (game->mouse->pack[0] & BIT(0))) {
         game->done = true;
@@ -646,7 +645,9 @@ void mouse_game_handler(Game *game) {
         game->state = INSTRUCTIONS_STATE;
         display_game(game);
       }
-      display_game(game);
+      else{
+        display_game(game);
+      }
       break;
     default:
       break;

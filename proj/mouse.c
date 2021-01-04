@@ -36,7 +36,7 @@ void draw_mouse(Mouse* mouse) {
 		mouse->y = 0;
 	if (mouse->y > YRes - mouse->h)
 		mouse->y = YRes - mouse->h;
-  vg_draw_rectangle(mouse->x, mouse->y, mouse->w, mouse->h, 155);
+  vg_draw_rectangle(mouse->x, mouse->y, mouse->w, mouse->h, 0x66fc03);
 	return;
 
 }
