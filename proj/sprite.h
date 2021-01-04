@@ -31,15 +31,42 @@ typedef struct {
  */
 Disc *create_disc(const char *circle[]);
 
+/**
+ * @brief deletes the disc object from memory
+ * 
+ * @param d disc to be deleted
+ * @return int 0 upon success, non zero upon failure
+ */
 int delete_disc(Disc *d);
 
+/**
+ * @brief moves the disc to the right
+ * 
+ * @param d disc pointer to disc object struct
+ */
 void move_disc_right(Disc *d);
 
+/**
+ * @brief moves the disc down
+ * 
+ * @param d disc pointer to disc object struct
+ */
 void move_disc_down(Disc *d);
 
+/**
+ * @brief moves the disc to the left
+ * 
+ * @param d disc pointer to disc object struct
+ */
 void move_disc_left(Disc *d);
-/** @} end of sprite */
 
+
+/**
+ * @brief draws the disc on the screen
+ * 
+ * @param d disc pointer to disc object struct
+ * @return int 0 upon success, non zero upon failure
+ */
 int draw_disc(Disc *d);
 
 
@@ -57,10 +84,22 @@ typedef struct { // 0 = empty, 1 = yellow, 2 = red;
  */
 Board *create_board();
 
+/**
+ * @brief deletes the board object from memory
+ * 
+ * @param board board to be deleted
+ * @return int 0 upon success, non zero upon failure
+ */
 int delete_board(Board *board);
 
 /** @} end of sprite */
 
+/**
+ * @brief draws the board on the screen
+ * 
+ * @param board board pointer to board object struct
+ * @return int 0 upon success, non zero upon failure
+ */
 int draw_board(Board *board);
 
 
@@ -77,8 +116,21 @@ typedef struct {
  */
 Background *create_background(const char *image[]);
 
+/**
+ * @brief deletes the background object from memory
+ * 
+ * @param bg background to be deleted
+ * @return int 0 upon success, non zero upon failure
+ */
 int delete_background(Background *bg);
 
+
+/**
+ * @brief draws the background on the screen
+ * 
+ * @param bg background pointer to background object struct
+ * @return int 0 upon success, non zero upon failure
+ */
 int draw_background(Background *bg);
 
 #endif
