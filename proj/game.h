@@ -228,3 +228,4 @@ void check_win_color(Game *game,int color);
 void verify_full_board(Game *game);
 
 
+void piece_animation(Game *game, Disc *d);
