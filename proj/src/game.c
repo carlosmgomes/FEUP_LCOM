@@ -83,7 +83,7 @@ int update_game(Game *game) {
           }
           if (msg.m_notify.interrupts & game->timer_irq_set) {
             timer_int_handler();
-            if (counter % (sys_hz()/6) == 0) {
+            if (counter % (sys_hz()/15) == 0) {
               double_buffer_update();
               if (game->yellow_win || game->red_win || game->tie) {
                 game->state = END_STATE;

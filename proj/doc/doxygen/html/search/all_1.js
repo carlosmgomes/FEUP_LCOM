@@ -1,0 +1,17 @@
+var searchData=
+[
+  ['change_5fturn_4',['change_turn',['../group__game.html#ga6415e667f8916e03595e324b24be3111',1,'change_turn(Game *game):&#160;game.c'],['../group__game.html#ga6415e667f8916e03595e324b24be3111',1,'change_turn(Game *game):&#160;game.c']]],
+  ['check_5fturn_5',['check_turn',['../group__game.html#gad1922fbf575fd6230093ca0b36473b06',1,'check_turn(Game *game):&#160;game.c'],['../group__game.html#gad1922fbf575fd6230093ca0b36473b06',1,'check_turn(Game *game):&#160;game.c']]],
+  ['check_5fturn_5fdraw_6',['check_turn_draw',['../group__game.html#gaabc94d35b70c673ad0b33531bed63732',1,'check_turn_draw(Game *game):&#160;game.c'],['../group__game.html#gaabc94d35b70c673ad0b33531bed63732',1,'check_turn_draw(Game *game):&#160;game.c']]],
+  ['check_5fturn_5fleft_7',['check_turn_left',['../group__game.html#ga7d73ee748542146b19163ec356add58a',1,'check_turn_left(Game *game):&#160;game.c'],['../group__game.html#ga7d73ee748542146b19163ec356add58a',1,'check_turn_left(Game *game):&#160;game.c']]],
+  ['check_5fturn_5fright_8',['check_turn_right',['../group__game.html#gaaa52dfba11e3e1076e13854333afadb4',1,'check_turn_right(Game *game):&#160;game.c'],['../group__game.html#gaaa52dfba11e3e1076e13854333afadb4',1,'check_turn_right(Game *game):&#160;game.c']]],
+  ['check_5fwin_9',['check_win',['../group__game.html#ga767a12b732fd5e5de781c1a3b4809a38',1,'check_win(Game *game, int row):&#160;game.c'],['../group__game.html#ga767a12b732fd5e5de781c1a3b4809a38',1,'check_win(Game *game, int row):&#160;game.c']]],
+  ['check_5fwin_5fcolor_10',['check_win_color',['../group__game.html#gaf97043631d692558a4e4fed23c14be99',1,'check_win_color(Game *game, int color):&#160;game.c'],['../group__game.html#gaf97043631d692558a4e4fed23c14be99',1,'check_win_color(Game *game, int color):&#160;game.c']]],
+  ['check_5fwin_5fdiagonal_11',['check_win_diagonal',['../group__game.html#ga394f05fe7950f46f80be0e29d0f440da',1,'check_win_diagonal(Game *game):&#160;game.c'],['../group__game.html#ga394f05fe7950f46f80be0e29d0f440da',1,'check_win_diagonal(Game *game):&#160;game.c']]],
+  ['check_5fwin_5fhorizontal_12',['check_win_horizontal',['../group__game.html#gac14d0d9cb9a79f6f09fa263c102288c0',1,'check_win_horizontal(Game *game, int row):&#160;game.c'],['../group__game.html#gac14d0d9cb9a79f6f09fa263c102288c0',1,'check_win_horizontal(Game *game, int row):&#160;game.c']]],
+  ['check_5fwin_5fvertical_13',['check_win_vertical',['../group__game.html#ga1d41f36cbc19841942d0b734f458f0d6',1,'check_win_vertical(Game *game, int row):&#160;game.c'],['../group__game.html#ga1d41f36cbc19841942d0b734f458f0d6',1,'check_win_vertical(Game *game, int row):&#160;game.c']]],
+  ['clean_5fdouble_5fbuffer_14',['clean_double_buffer',['../group__graphics.html#gaa3893ed2b71cb19979950c742507f8c2',1,'clean_double_buffer():&#160;graphics_mode.c'],['../group__graphics.html#gaa3893ed2b71cb19979950c742507f8c2',1,'clean_double_buffer():&#160;graphics_mode.c']]],
+  ['count_5fmode_15',['count_mode',['../group__timer.html#ga069cd58184fd977a3345d560f159037a',1,'timer_status_field_val']]],
+  ['create_5fboard_16',['create_board',['../group__sprite.html#gaa75f219ebd0b6886d418b3eebc537b6b',1,'create_board():&#160;sprite.c'],['../group__sprite.html#gaa75f219ebd0b6886d418b3eebc537b6b',1,'create_board():&#160;sprite.c']]],
+  ['create_5fdisc_17',['create_disc',['../group__sprite.html#gae6e58490b866f83b55c18cb7dc28fd19',1,'create_disc(const char *circle[]):&#160;sprite.c'],['../group__sprite.html#gae6e58490b866f83b55c18cb7dc28fd19',1,'create_disc(const char *circle[]):&#160;sprite.c']]]
+];
