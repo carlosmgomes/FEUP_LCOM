@@ -83,7 +83,7 @@ int update_game(Game *game) {
           }
           if (msg.m_notify.interrupts & game->timer_irq_set) {
             timer_int_handler();
-            if (counter % (sys_hz()/30) == 0) {
+            if (counter % (sys_hz()/6) == 0) {
               double_buffer_update();
               if (game->yellow_win || game->red_win || game->tie) {
                 game->state = END_STATE;
@@ -129,7 +129,6 @@ void check_turn_left(Game *game) {
 void change_turn(Game *game) {
   place_disc_array(game);
   display_game(game);
-  //piece_animation(game);
   game->red_turn = !game->red_turn;
   game->yellow_turn = !game->yellow_turn;
 }
@@ -581,8 +580,9 @@ void kbd_game_handler(Game *game) {
       if (game->kbd_scancode != 0) {
         if (game->red_turn) {
           if (game->kbd_scancode == 0x1C) { // enter pressed
-            if (check_turn(game))
-              change_turn(game);
+            if (check_turn(game)){
+              piece_animation(game, game->red_board);
+              change_turn(game);}
           }
           if (game->kbd_scancode == 0x4B) { // left
             check_turn_left(game);
@@ -623,8 +623,11 @@ void mouse_game_handler(Game *game) {
     case GAME_STATE:
       if (game->yellow_turn) {
         if (game->mouse->pack[0] & BIT(0)) {
-          if (check_turn(game))
+          if (check_turn(game)){
+            piece_animation(game, game->yellow_board);
             change_turn(game);
+          }
+            
         }
         mouse_follow_disc(game);
         display_game(game);
@@ -735,4 +738,118 @@ void verify_full_board(Game *game) {
     return;
   }
   game->tie = true;
+}
+
+void piece_animation(Game *game, Disc *d) {
+  int column = 0;
+  if (game->red_turn) column = game->red->column;
+  else column = game->yellow->column;
+  int i = 5;
+  switch (column) {
+    case 1:
+      while (i>=0) {
+         if(game->board->Column1[i] == 0){
+        if (counter % (sys_hz()/60) == 0){
+        clean_double_buffer();
+        draw_board(game->board);
+        fill_board(game);
+        draw_disc_on_coords(d, 122, 512 - 83 * i);
+        //display_game(game);
+        double_buffer_update();
+        i--;}
+      }
+      else i= -1;
+      }
+      break;
+    case 2:
+      while (i>=0) {
+         if(game->board->Column2[i] == 0){
+        if (counter % (sys_hz()/60) == 0){
+        clean_double_buffer();
+        draw_board(game->board);
+        fill_board(game);
+        draw_disc_on_coords(d, 205, 512 - 83 * i);
+        //display_game(game);
+        double_buffer_update();
+        i--;}
+      }
+      else i= -1;
+      }
+      break;
+    case 3:
+      while (i>=0) {
+         if(game->board->Column3[i] == 0){
+        if (counter % (sys_hz()/60) == 0){
+        clean_double_buffer();
+        draw_board(game->board);
+        fill_board(game);
+        draw_disc_on_coords(d, 288, 512 - 83 * i);
+        //display_game(game);
+        double_buffer_update();
+        i--;}
+      }
+      else i= -1;
+      }
+      break;
+    case 4:
+      while (i>=0) {
+         if(game->board->Column4[i] == 0){
+        if (counter % (sys_hz()/60) == 0){
+        clean_double_buffer();
+        draw_board(game->board);
+        fill_board(game);
+        draw_disc_on_coords(d, 371, 512 - 83 * i);
+        //display_game(game);
+        double_buffer_update();
+        i--;}
+      }
+      else i= -1;
+      }
+      break;
+    case 5:
+      while (i>=0) {
+         if(game->board->Column5[i] == 0){
+        if (counter % (sys_hz()/60) == 0){
+        clean_double_buffer();
+        draw_board(game->board);
+        fill_board(game);
+        draw_disc_on_coords(d, 454, 512 - 83 * i);
+        //display_game(game);
+        double_buffer_update();
+        i--;}
+      }
+      else i= -1;
+      }
+      break;
+    case 6:
+      while (i>=0) {
+         if(game->board->Column6[i] == 0){
+        if (counter % (sys_hz()/60) == 0){
+        clean_double_buffer();
+        draw_board(game->board);
+        fill_board(game);
+        draw_disc_on_coords(d, 537, 512 - 83 * i);
+        //display_game(game);
+        double_buffer_update();
+        i--;}
+      }
+      else i= -1;
+      }
+      break;
+    case 7:
+      while (i>=0) {
+         if(game->board->Column7[i] == 0){
+        if (counter % (sys_hz()/60) == 0){
+        clean_double_buffer();
+        draw_board(game->board);
+        fill_board(game);
+        draw_disc_on_coords(d, 620, 512 - 83 * i);
+        //display_game(game);
+        double_buffer_update();
+        i--;}
+      }
+      else i= -1;
+      }
+      break;
+  }
 }
