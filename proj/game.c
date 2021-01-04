@@ -83,6 +83,8 @@ int update_game(Game *game) {
           }
           if (msg.m_notify.interrupts & game->timer_irq_set) {
             timer_int_handler();
+            if (counter % (sys_hz() / 30) == 0)
+              double_buffer_update();
           }
         default:
           break;
@@ -135,21 +137,20 @@ void display_game(Game *game) {
       check_turn_draw(game);
       draw_mouse(game->mouse);
       fill_board(game);
+      if (game->yellow_win || game->red_win || game->tie) {
+        fill_board(game);
+        game->state = END_STATE;
+      }
       if (game->yellow_turn) {
         draw_disc(game->yellow);
       }
       else {
         draw_disc(game->red);
       }
-      double_buffer_update();
-      if (game->yellow_win || game->red_win || game->tie) {
-        game->state = END_STATE;
-      }
       break;
     case MENU_STATE:
       draw_background(game->mainmenu);
       draw_mouse(game->mouse);
-      double_buffer_update();
       init_board(game->board);
       game->yellow_turn = true;
       game->red_turn = false;
@@ -168,12 +169,10 @@ void display_game(Game *game) {
       if (game->tie) {
         draw_background(game->endgame_tie);
       }
-      double_buffer_update();
       break;
 
     case INSTRUCTIONS_STATE:
       draw_background(game->instructions);
-      double_buffer_update();
       break;
   }
 }
@@ -645,7 +644,7 @@ void mouse_game_handler(Game *game) {
         game->state = INSTRUCTIONS_STATE;
         display_game(game);
       }
-      else{
+      else {
         display_game(game);
       }
       break;
