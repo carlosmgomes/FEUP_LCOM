@@ -8,7 +8,11 @@
 
 #define KBD_IRC 1
 
-
+/** @defgroup i8042 i8042
+ * @{
+ *
+ * Constants for programming the keyboard
+ */
 //  STATUS
 
 #define KBC_PARITY BIT(7)
