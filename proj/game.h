@@ -189,7 +189,7 @@ bool check_win(Game* game, int row);
  * @return true if it resulted in a victory
  * @return false if not
  */
-bool check_win_diagonal(Game* game);ç
+bool check_win_diagonal(Game* game);
 
 /**
  * @brief handles the keyboard interruptions
